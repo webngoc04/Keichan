@@ -8,6 +8,7 @@ import (
 	"math"
 	"net/http"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -659,12 +660,14 @@ func registerTelegramCommands(token string) {
 	}
 	url := fmt.Sprintf("https://api.telegram.org/bot%s/setMyCommands", token)
 	commands := []map[string]string{
-		{"command": "stats", "description": "📊 Thống kê doanh thu & hệ thống"},
+		{"command": "stats", "description": "📊 Thống kê doanh thu & nạp tiền"},
+		{"command": "apistats", "description": "🤖 Thống kê AI API, Tokens & Kênh"},
+		{"command": "channels", "description": "📡 Danh sách kênh AI & Trạng thái"},
 		{"command": "recent", "description": "🕒 10 đơn nạp mới nhất"},
 		{"command": "rates", "description": "💵 Tỷ giá USD/VND & Cấu hình nạp"},
 		{"command": "order", "description": "🔍 Tra cứu đơn: /order <mã>"},
 		{"command": "user", "description": "👤 Tra cứu User: /user <id|username>"},
-		{"command": "addquota", "description": "➕ Cộng Quota: /addquota <id> <usd>"},
+		{"command": "addquota", "description": "➕ Nạp tiền User: /addquota <id> <usd>"},
 		{"command": "banned", "description": "🛡️ Danh sách IP đang bị khóa"},
 		{"command": "unban", "description": "🔓 Mở khóa: /unban <ip|user_id>"},
 		{"command": "id", "description": "🆔 Xem Telegram ID của bạn"},
@@ -674,12 +677,53 @@ func registerTelegramCommands(token string) {
 	http.Post(url, "application/json", bytes.NewReader(body))
 }
 
+func getChannelTypeName(channelType int) string {
+	switch channelType {
+	case 1:
+		return "OpenAI"
+	case 2:
+		return "Midjourney"
+	case 3:
+		return "Azure OpenAI"
+	case 4:
+		return "Ollama"
+	case 14:
+		return "Anthropic Claude"
+	case 20:
+		return "OpenRouter"
+	case 24:
+		return "Google Gemini"
+	case 27:
+		return "Perplexity"
+	case 33:
+		return "AWS Bedrock"
+	case 34:
+		return "Cohere"
+	case 40:
+		return "SiliconFlow"
+	case 41:
+		return "Vertex AI"
+	case 42:
+		return "Mistral"
+	case 43:
+		return "DeepSeek"
+	case 48:
+		return "xAI (Grok)"
+	case 54:
+		return "Cloudflare"
+	case 57:
+		return "Together AI"
+	default:
+		return fmt.Sprintf("Type %d", channelType)
+	}
+}
+
 func getAdminReplyKeyboard() map[string]interface{} {
 	return map[string]interface{}{
 		"keyboard": [][]map[string]string{
-			{{"text": "📊 Thống kê"}, {"text": "🕒 Đơn gần đây"}},
-			{{"text": "💵 Tỷ giá & Phí"}, {"text": "🔍 Tra cứu đơn"}},
-			{{"text": "👤 Tra cứu User"}, {"text": "🆔 My ID"}},
+			{{"text": "📊 Doanh thu"}, {"text": "🤖 Thống kê API"}},
+			{{"text": "🕒 Đơn gần đây"}, {"text": "💵 Tỷ giá & Phí"}},
+			{{"text": "🔍 Tra cứu đơn"}, {"text": "👤 Tra cứu User"}},
 		},
 		"resize_keyboard": true,
 		"is_persistent":   true,
@@ -695,19 +739,197 @@ func handleTelegramAdminMessage(token string, adminId int64, chatId int64, fromI
 			"👋 <b>Xin chào Admin @%s!</b>\n\n"+
 				"Chào mừng bạn đến với bảng điều khiển <b>Keichan API Gateway</b>.\n\n"+
 				"⚡ <b>Danh sách lệnh khả dụng:</b>\n"+
-				"• <code>/stats</code> — 📊 Báo cáo doanh thu & Thống kê\n"+
+				"• <code>/stats</code> — 📊 Báo cáo doanh thu & nạp tiền\n"+
+				"• <code>/apistats</code> — 🤖 Thống kê AI API, Tokens & Lưu lượng\n"+
+				"• <code>/channels</code> — 📡 Danh sách kênh AI & Độ trễ\n"+
 				"• <code>/recent</code> — 🕒 Danh sách 10 đơn nạp gần nhất\n"+
 				"• <code>/rates</code> — 💵 Kiểm tra tỷ giá USD/VND thị trường\n"+
 				"• <code>/order &lt;mã&gt;</code> — 🔍 Tra cứu chi tiết đơn nạp\n"+
 				"• <code>/user &lt;id|username&gt;</code> — 👤 Tra cứu thông tin người dùng\n"+
-				"• <code>/addquota &lt;id&gt; &lt;usd&gt;</code> — ➕ Cộng Quota nhanh cho User\n"+
+				"• <code>/addquota &lt;id&gt; &lt;usd&gt;</code> — ➕ Nạp tiền nhanh cho User\n"+
+				"• <code>/banned</code> — 🛡️ Danh sách IP đang bị khóa\n"+
+				"• <code>/unban &lt;ip|user_id&gt;</code> — 🔓 Mở khóa IP / Kích hoạt User\n"+
 				"• <code>/id</code> — 🆔 Xem Telegram ID của bạn\n\n"+
 				"👇 <i>Bạn có thể bấm trực tiếp các nút trên Bàn phím bên dưới để thao tác nhanh:</i>",
 			username,
 		)
 		sendTelegramTextMessage(token, chatId, msg, getAdminReplyKeyboard())
 
-	case lowerText == "/stats" || strings.Contains(lowerText, "thống kê"):
+	case lowerText == "/apistats" || lowerText == "/api" || text == "🤖 Thống kê API" || strings.Contains(lowerText, "thống kê api"):
+		loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
+		now := time.Now().In(loc)
+		startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc).Unix()
+
+		// 1. Requests & Traffic
+		var totalRequests int64
+		model.LOG_DB.Table("logs").Where("type = ?", model.LogTypeConsume).Count(&totalRequests)
+
+		var todayRequests int64
+		model.LOG_DB.Table("logs").Where("type = ? AND created_at >= ?", model.LogTypeConsume, startOfDay).Count(&todayRequests)
+
+		var rpm, tpm int64
+		_ = model.LOG_DB.Table("logs").Where("type = ? AND created_at >= ?", model.LogTypeConsume, time.Now().Add(-60*time.Second).Unix()).
+			Select("count(*), coalesce(sum(prompt_tokens + completion_tokens), 0)").Row().Scan(&rpm, &tpm)
+
+		var avgLatency float64
+		_ = model.LOG_DB.Table("logs").Where("type = ? AND created_at >= ?", model.LogTypeConsume, startOfDay).
+			Select("coalesce(avg(use_time), 0)").Scan(&avgLatency)
+
+		// 2. Tokens & Quota
+		var totalQuotaUsed int64
+		_ = model.LOG_DB.Table("logs").Where("type = ?", model.LogTypeConsume).Select("coalesce(sum(quota), 0)").Scan(&totalQuotaUsed)
+
+		var todayQuotaUsed int64
+		_ = model.LOG_DB.Table("logs").Where("type = ? AND created_at >= ?", model.LogTypeConsume, startOfDay).Select("coalesce(sum(quota), 0)").Scan(&todayQuotaUsed)
+
+		var totalPromptTokens, totalCompTokens int64
+		_ = model.LOG_DB.Table("logs").Where("type = ?", model.LogTypeConsume).
+			Select("coalesce(sum(prompt_tokens), 0), coalesce(sum(completion_tokens), 0)").Row().Scan(&totalPromptTokens, &totalCompTokens)
+
+		var todayPromptTokens, todayCompTokens int64
+		_ = model.LOG_DB.Table("logs").Where("type = ? AND created_at >= ?", model.LogTypeConsume, startOfDay).
+			Select("coalesce(sum(prompt_tokens), 0), coalesce(sum(completion_tokens), 0)").Row().Scan(&todayPromptTokens, &todayCompTokens)
+
+		totalTokensSum := totalPromptTokens + totalCompTokens
+		todayTokensSum := todayPromptTokens + todayCompTokens
+		todayQuotaUSD := float64(todayQuotaUsed) / float64(common.QuotaPerUnit)
+		totalQuotaUSD := float64(totalQuotaUsed) / float64(common.QuotaPerUnit)
+
+		// 3. Top 5 Models
+		type ModelStat struct {
+			ModelName string
+			Count     int64
+			Quota     int64
+		}
+		var topModels []ModelStat
+		_ = model.LOG_DB.Table("logs").Where("type = ? AND created_at >= ?", model.LogTypeConsume, startOfDay).
+			Select("model_name, count(*) as count, sum(quota) as quota").Group("model_name").Order("count desc").Limit(5).Scan(&topModels)
+		if len(topModels) == 0 {
+			_ = model.LOG_DB.Table("logs").Where("type = ?", model.LogTypeConsume).
+				Select("model_name, count(*) as count, sum(quota) as quota").Group("model_name").Order("count desc").Limit(5).Scan(&topModels)
+		}
+
+		var topModelsStr strings.Builder
+		if len(topModels) > 0 {
+			for i, m := range topModels {
+				mUSD := float64(m.Quota) / float64(common.QuotaPerUnit)
+				topModelsStr.WriteString(fmt.Sprintf("• <code>%s</code>: <b>%d reqs</b> ($%.4f)\n", m.ModelName, m.Count, mUSD))
+				if i >= 4 {
+					break
+				}
+			}
+		} else {
+			topModelsStr.WriteString("• <i>Chưa có dữ liệu gọi mô hình</i>\n")
+		}
+
+		// 4. Channels
+		var totalChannels, enabledChannels, disabledChannels int64
+		model.DB.Model(&model.Channel{}).Count(&totalChannels)
+		model.DB.Model(&model.Channel{}).Where("status = ?", common.ChannelStatusEnabled).Count(&enabledChannels)
+		model.DB.Model(&model.Channel{}).Where("status != ?", common.ChannelStatusEnabled).Count(&disabledChannels)
+
+		// 5. Users & Tokens & System
+		var totalUsers, totalTokens int64
+		model.DB.Model(&model.User{}).Count(&totalUsers)
+		model.DB.Model(&model.Token{}).Count(&totalTokens)
+		bannedCount := len(middleware.GetBannedIPs())
+
+		uptimeSec := time.Now().Unix() - common.StartTime
+		uptimeStr := fmt.Sprintf("%d giờ %d phút", uptimeSec/3600, (uptimeSec%3600)/60)
+
+		var mem runtime.MemStats
+		runtime.ReadMemStats(&mem)
+		allocMB := float64(mem.Alloc) / 1024 / 1024
+		sysMB := float64(mem.Sys) / 1024 / 1024
+		goroutines := runtime.NumGoroutine()
+
+		apiStatsMsg := fmt.Sprintf(
+			"🤖 <b>THỐNG KÊ LƯU LƯỢNG API & HỆ THỐNG</b>\n"+
+				"⏰ <i>Cập nhật: %s</i>\n\n"+
+				"⚡ <b>LƯU LƯỢNG REQUEST AI:</b>\n"+
+				"• Hôm nay: <b>%d requests</b> (TB: <b>%.0f ms</b>)\n"+
+				"• Tốc độ hiện tại: <b>%d RPM</b> | <b>%d TPM</b>\n"+
+				"• Tổng toàn thời gian: <b>%d requests</b>\n\n"+
+				"🪙 <b>TIÊU THỤ TOKEN & CHI PHÍ:</b>\n"+
+				"• Token hôm nay: <b>%s tokens</b> ($%.4f USD)\n"+
+				"  └ Input: %s | Output: %s\n"+
+				"• Tổng token đã dùng: <b>%s tokens</b> ($%.4f USD)\n\n"+
+				"🏆 <b>TOP MÔ HÌNH THỊNH HÀNH:</b>\n%s\n"+
+				"📡 <b>HẠ TẦNG KÊNH (CHANNELS):</b>\n"+
+				"• Tổng số kênh: <b>%d kênh</b> (🟢 <b>%d bật</b> | 🔴 <b>%d tắt</b>)\n"+
+				"• Xem chi tiết: <code>/channels</code>\n\n"+
+				"👥 <b>QUY MÔ HỆ THỐNG:</b>\n"+
+				"• Tổng Users: <b>%d</b> | Tổng API Keys: <b>%d</b>\n"+
+				"• IP đang bị khóa (Auto-Ban): <b>%d</b>\n\n"+
+				"💻 <b>TÀI NGUYÊN MÁY CHỦ:</b>\n"+
+				"• Uptime: <b>%s</b>\n"+
+				"• RAM: <b>%.1f MB</b> / %.1f MB | Goroutines: <b>%d</b>",
+			now.Format("15:04:05 02/01/2006"),
+			todayRequests,
+			avgLatency,
+			rpm,
+			tpm,
+			totalRequests,
+			formatVND(todayTokensSum),
+			todayQuotaUSD,
+			formatVND(todayPromptTokens),
+			formatVND(todayCompTokens),
+			formatVND(totalTokensSum),
+			totalQuotaUSD,
+			topModelsStr.String(),
+			totalChannels,
+			enabledChannels,
+			disabledChannels,
+			totalUsers,
+			totalTokens,
+			bannedCount,
+			uptimeStr,
+			allocMB,
+			sysMB,
+			goroutines,
+		)
+		sendTelegramTextMessage(token, chatId, apiStatsMsg, getAdminReplyKeyboard())
+
+	case lowerText == "/channels" || lowerText == "/channel" || strings.Contains(lowerText, "kênh ai"):
+		var channels []model.Channel
+		model.DB.Order("priority desc, id asc").Find(&channels)
+
+		if len(channels) == 0 {
+			sendTelegramTextMessage(token, chatId, "ℹ️ Hiện chưa có kênh AI nào được cấu hình trong hệ thống.", getAdminReplyKeyboard())
+			return
+		}
+
+		var sb strings.Builder
+		sb.WriteString("📡 <b>DANH SÁCH KÊNH AI (CHANNELS):</b>\n\n")
+
+		for i, ch := range channels {
+			statusIcon := "🟢"
+			statusText := "Đang bật"
+			if ch.Status != common.ChannelStatusEnabled {
+				statusIcon = "🔴"
+				statusText = "Tạm tắt"
+			}
+
+			typeStr := getChannelTypeName(ch.Type)
+			sb.WriteString(fmt.Sprintf(
+				"%d. %s <b>%s</b> (#%d)\n"+
+					"   └ Loại: <code>%s</code> | Nhóm: <code>%s</code>\n"+
+					"   └ Trạng thái: %s | Độ trễ: <b>%d ms</b> | Ưu tiên: <b>%d</b>\n\n",
+				i+1,
+				statusIcon,
+				ch.Name,
+				ch.Id,
+				typeStr,
+				ch.Group,
+				statusText,
+				ch.ResponseTime,
+				ch.Priority,
+			))
+		}
+
+		sendTelegramTextMessage(token, chatId, strings.TrimSpace(sb.String()), getAdminReplyKeyboard())
+
+	case lowerText == "/stats" || lowerText == "/doanhthu" || text == "📊 Doanh thu" || strings.Contains(lowerText, "doanh thu"):
 		loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
 		now := time.Now().In(loc)
 		startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc).Unix()
@@ -744,7 +966,7 @@ func handleTelegramAdminMessage(token string, adminId int64, chatId int64, fromI
 		model.DB.Model(&model.TopUp{}).Where("status = ? AND create_time >= ?", common.TopUpStatusSuccess, startOfMonth).Select("coalesce(sum(money), 0)").Scan(&monthVND)
 
 		statsMsg := fmt.Sprintf(
-			"📊 <b>BÁO CÁO DOANH THU & HỆ THỐNG</b>\n"+
+			"📊 <b>BÁO CÁO DOANH THU & NẠP TIỀN</b>\n"+
 				"⏰ <i>Cập nhật: %s</i>\n\n"+
 				"☀️ <b>HÔM NAY (%s):</b>\n"+
 				"• Đơn thành công: <b>%d đơn</b>\n"+

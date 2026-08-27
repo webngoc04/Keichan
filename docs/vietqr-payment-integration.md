@@ -161,18 +161,22 @@ Không sử dụng cron polling gây hao pin và nóng máy. Script sử dụng 
 Bot Telegram (`TelegramBotToken`) tích hợp bàn phím tương tác nhanh (Persistent Reply Keyboard) và bộ lệnh quản trị bảo mật cho Admin:
 
 ### Nút bấm nhanh (Reply Keyboard Box):
-- 📊 **Thống kê**: Báo cáo doanh thu hôm nay, tháng này, tổng toàn thời gian (VNĐ & USD), số lượng đơn thành công/chờ.
+- 📊 **Doanh thu**: Báo cáo doanh thu hôm nay, tháng này, tổng toàn thời gian (VNĐ & USD), số lượng đơn thành công/chờ.
+- 🤖 **Thống kê API**: Thống kê toàn diện về AI traffic (Requests, Latency, RPM/TPM), Tiêu thụ Token (Input/Output), Chi phí Quota ($ USD), Top 5 Models thịnh hành, Hạ tầng kênh, Users, API Keys, RAM & Uptime máy chủ.
 - 🕒 **Đơn gần đây**: Danh sách 10 giao dịch nạp VietQR/Crypto mới nhất (Mã đơn, Số tiền, User ID, Trạng thái, Thời gian).
 - 💵 **Tỷ giá & Phí**: Tỷ giá USDT/VNĐ Real-time từ Binance P2P, tỷ giá đơn gần nhất, cấu hình STK MBBank.
 - 🔍 **Tra cứu đơn**: Tra cứu đơn nạp theo mã (`/order KCxxxxxx`). Nếu đơn đang chờ, bot đính kèm nút `[✅ Duyệt]` / `[❌ Hủy]`.
 - 👤 **Tra cứu User**: Xem số dư USD, email, nhóm quyền, ngày đăng ký (`/user <id|username>`).
-- 🆔 **My ID**: Xem Telegram ID & Chat ID.
 
 ### Lệnh Quản trị & Cứu hộ:
+- `/stats` (hoặc `/doanhthu`): Báo cáo doanh thu và lịch sử nạp tiền.
+- `/apistats` (hoặc `/api`): Báo cáo chi tiết về lưu lượng AI API, Token, Chi phí, Top Model và Server Health.
+- `/channels`: Danh sách tất cả các kênh AI (OpenAI, Claude, Gemini, DeepSeek, v.v.), trạng thái bật/tắt, độ trễ ms và mức ưu tiên.
 - `/addquota <user_id> <số_usd>`: Nạp tiền/Quota thủ công trực tiếp cho User.
 - `/banned`: Xem danh sách toàn bộ IP đang bị hệ thống Auto-Ban khóa.
 - `/unban <ip|user_id>`: Mở khóa IP hoặc kích hoạt lại tài khoản User bị khóa.
-- `/help`: Xem hướng dẫn sử dụng bot.
+- `/id`: Xem Telegram ID và Chat ID của bạn.
+- `/help`: Xem hướng dẫn sử dụng bot và mở lại bàn phím nút bấm.
 
 ---
 
