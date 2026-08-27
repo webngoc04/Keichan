@@ -134,7 +134,7 @@ docker pull calciumion/new-api:latest
 # Sử dụng SQLite (mặc định)
 docker run --name new-api -d --restart always \
   -p 3000:3000 \
-  -e TZ=Asia/Ho_Chi_Minh \
+  -e TZ=UTC \
   -v ./data:/data \
   calciumion/new-api:latest
 
@@ -142,7 +142,7 @@ docker run --name new-api -d --restart always \
 docker run --name new-api -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
-  -e TZ=Asia/Ho_Chi_Minh \
+  -e TZ=UTC \
   -v ./data:/data \
   calciumion/new-api:latest
 ```
