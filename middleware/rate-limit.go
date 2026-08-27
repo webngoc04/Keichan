@@ -197,9 +197,24 @@ func UserCriticalRateLimit(scope string) func(c *gin.Context) {
 	)
 }
 
-// AuthRateLimit: 5 requests / 60 seconds for login/register/reset
+// AuthRateLimit: 20 requests / 60 seconds for general auth actions
 func AuthRateLimit() func(c *gin.Context) {
-	return rateLimitFactory(5, 60, "AUTH")
+	return rateLimitFactory(20, 60, "AUTH")
+}
+
+// LoginRateLimit: 20 requests / 60 seconds specifically for login attempts
+func LoginRateLimit() func(c *gin.Context) {
+	return rateLimitFactory(20, 60, "LOGIN")
+}
+
+// RegisterRateLimit: 10 requests / 60 seconds for registration
+func RegisterRateLimit() func(c *gin.Context) {
+	return rateLimitFactory(10, 60, "REG")
+}
+
+// PasswordResetRateLimit: 10 requests / 60 seconds for password reset
+func PasswordResetRateLimit() func(c *gin.Context) {
+	return rateLimitFactory(10, 60, "RESET")
 }
 
 // PaymentRateLimit: 10 requests / 60 seconds per user for topup/payment requests
