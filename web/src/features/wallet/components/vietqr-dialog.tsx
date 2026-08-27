@@ -47,6 +47,8 @@ export function VietQRDialog({
   useEffect(() => {
     if (!open || !order?.trade_no || isSuccess) return
 
+    let closeTimer: ReturnType<typeof setTimeout> | undefined
+
     const interval = setInterval(async () => {
       try {
         const res = await checkVietQRStatus(order.trade_no)
@@ -54,14 +56,21 @@ export function VietQRDialog({
           setIsSuccess(true)
           toast.success(t('Payment successful! Quota added to your balance.'))
           onSuccess()
+          // Automatically close the bank popup after 1.5 seconds so the user sees confirmation
+          closeTimer = setTimeout(() => {
+            onOpenChange(false)
+          }, 1500)
         }
       } catch {
         // Ignore polling errors
       }
     }, 2500)
 
-    return () => clearInterval(interval)
-  }, [open, order?.trade_no, isSuccess, onSuccess, t])
+    return () => {
+      clearInterval(interval)
+      if (closeTimer) clearTimeout(closeTimer)
+    }
+  }, [open, order?.trade_no, isSuccess, onSuccess, onOpenChange, t])
 
   const copyToClipboard = async (
     text: string,
