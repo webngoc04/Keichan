@@ -34,6 +34,33 @@ export function VietQRDialog({
   const [isCopiedMemo, setIsCopiedMemo] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(120)
+
+  // 2-minute countdown timer
+  useEffect(() => {
+    if (!open || isSuccess) return
+    setTimeLeft(120)
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          toast.error(t('Order expired after 2 minutes. Please create a new order.'))
+          onOpenChange(false)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [open, isSuccess, onOpenChange, t])
+
+  const formatCountdown = (seconds: number) => {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, '0')
+    const secs = (seconds % 60).toString().padStart(2, '0')
+    return `${mins}:${secs}`
+  }
 
   // Reset state when opening new order
   useEffect(() => {
@@ -57,6 +84,12 @@ export function VietQRDialog({
         if (!isMounted) return
 
         const status = res.data?.status
+        if (status === 'expired' || status === 'failed') {
+          toast.error(t('Order expired after 2 minutes. Please create a new order.'))
+          onOpenChange(false)
+          return
+        }
+
         const isCompleted =
           res.success &&
           (status === 'success' ||
@@ -238,13 +271,18 @@ export function VietQRDialog({
               </div>
             </div>
 
-            {/* Live Polling Status Indicator */}
-            <div className='flex items-center justify-center gap-2 text-xs text-muted-foreground font-medium'>
-              <span className='relative flex size-2'>
-                <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75'></span>
-                <span className='relative inline-flex size-2 rounded-full bg-emerald-500'></span>
+            {/* Live Polling Status Indicator & 2-Minute Expiration Countdown */}
+            <div className='flex items-center justify-between px-1 text-xs text-muted-foreground font-medium'>
+              <div className='flex items-center gap-2'>
+                <span className='relative flex size-2'>
+                  <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75'></span>
+                  <span className='relative inline-flex size-2 rounded-full bg-emerald-500'></span>
+                </span>
+                <span>{t('Waiting for transfer...')}</span>
+              </div>
+              <span className='font-mono font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full text-[11px]'>
+                ⏳ {formatCountdown(timeLeft)}
               </span>
-              <span>{t('Waiting for transfer... (Auto-checking)')}</span>
             </div>
           </div>
         )}

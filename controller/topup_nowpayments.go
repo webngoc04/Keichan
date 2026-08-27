@@ -357,3 +357,41 @@ func NowpaymentsWebhook(c *gin.Context) {
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("NOWPayments 充值成功 trade_no=%s payment_id=%s actually_paid=%s client_ip=%s", tradeNo, payload.PaymentId.String(), payload.ActuallyPaid.String(), c.ClientIP()))
 	c.String(http.StatusOK, "OK")
 }
+
+// CheckNowpaymentsStatus checks payment status of a NOWPayments order with 2-minute auto-expiration
+func CheckNowpaymentsStatus(c *gin.Context) {
+	tradeNo := c.Query("trade_no")
+	if tradeNo == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Thiếu mã đơn hàng"})
+		return
+	}
+
+	topUp := model.GetTopUpByTradeNo(tradeNo)
+	if topUp == nil {
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "Đơn nạp không tồn tại"})
+		return
+	}
+
+	userId := c.GetInt("id")
+	if topUp.UserId != userId && c.GetString("role") != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"success": false, "message": "Không có quyền truy cập"})
+		return
+	}
+
+	// Auto-expire pending order if exceeded 2 minutes (120 seconds) to prevent hanging
+	if topUp.Status == common.TopUpStatusPending && common.GetTimestamp()-topUp.CreateTime > 120 {
+		_ = model.UpdatePendingTopUpStatus(tradeNo, model.PaymentProviderNowpayments, common.TopUpStatusExpired)
+		topUp.Status = common.TopUpStatusExpired
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data": gin.H{
+			"trade_no":      topUp.TradeNo,
+			"status":        topUp.Status,
+			"amount":        topUp.Amount,
+			"money":         topUp.Money,
+			"complete_time": topUp.CompleteTime,
+		},
+	})
+}

@@ -269,6 +269,18 @@ export async function checkVietQRStatus(
 }
 
 /**
+ * Check NOWPayments payment status
+ */
+export async function checkNowpaymentsStatus(
+  tradeNo: string
+): Promise<ApiResponse<{ trade_no: string; status: string; amount: number; money: number; complete_time: number }>> {
+  const res = await api.get(`/api/user/nowpayments/status?trade_no=${encodeURIComponent(tradeNo)}`, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
  * Get affiliate code
  */
 export async function getAffiliateCode(): Promise<AffiliateCodeResponse> {

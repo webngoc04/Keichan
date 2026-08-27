@@ -390,7 +390,7 @@ func RequestVietQRTopUp(c *gin.Context) {
 			"memo":       tradeNo,
 			"qr_url":     qrUrl,
 			"created_at": topUp.CreateTime,
-			"expires_in": 1800, // 30 minutes
+			"expires_in": 120, // 2 minutes auto expiration
 		},
 	})
 }
@@ -412,6 +412,12 @@ func CheckVietQRStatus(c *gin.Context) {
 	if topUp.UserId != userId && c.GetString("role") != "admin" {
 		c.JSON(http.StatusForbidden, gin.H{"success": false, "message": "Không có quyền truy cập"})
 		return
+	}
+
+	// Auto-expire pending order if exceeded 2 minutes (120 seconds) to prevent hanging
+	if topUp.Status == common.TopUpStatusPending && common.GetTimestamp()-topUp.CreateTime > 120 {
+		_ = model.UpdatePendingTopUpStatus(tradeNo, model.PaymentProviderVietQR, common.TopUpStatusExpired)
+		topUp.Status = common.TopUpStatusExpired
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -503,6 +509,20 @@ func StartTelegramBotWorker() {
 	}
 	telegramPollerStarted = true
 	telegramPollerMu.Unlock()
+
+	// Background worker: Clean hanging pending orders older than 2 minutes (120 seconds)
+	go func() {
+		for {
+			time.Sleep(15 * time.Second)
+			threshold := common.GetTimestamp() - 120
+			model.DB.Model(&model.TopUp{}).
+				Where("status = ? AND create_time < ? AND payment_provider IN (?, ?)",
+					common.TopUpStatusPending, threshold, model.PaymentProviderVietQR, model.PaymentProviderNowpayments).
+				Updates(map[string]interface{}{
+					"status": common.TopUpStatusExpired,
+				})
+		}
+	}()
 
 	go func() {
 		offset := 0
