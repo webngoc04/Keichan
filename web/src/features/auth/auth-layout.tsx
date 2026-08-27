@@ -126,7 +126,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
               </div>
               <div className='p-4 space-y-2 text-muted-foreground text-[11.5px] leading-relaxed'>
                 <div className='text-foreground/90'>
-                  <span className='text-primary'>$</span> curl -X POST https://api.newapi.pro/v1/chat/completions \
+                  <span className='text-primary'>$</span> curl -X POST {typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://keichan.indevs.in'}/v1/chat/completions \
                 </div>
                 <div className='pl-3 text-muted-foreground'>
                   -H &quot;Authorization: Bearer sk-••••••••••••&quot;

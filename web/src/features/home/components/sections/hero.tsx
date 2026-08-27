@@ -38,7 +38,13 @@ export function Hero(props: HeroProps) {
   const docsUrl =
     (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
 
-  const quickCommand = 'curl -X POST https://api.newapi.pro/v1/chat/completions -H "Authorization: Bearer sk-..."'
+  const currentOrigin =
+    (status?.server_address as string | undefined)?.trim() ||
+    (typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : 'https://keichan.indevs.in')
+
+  const quickCommand = `curl -X POST ${currentOrigin}/v1/chat/completions -H "Authorization: Bearer sk-..."`
 
   const handleCopyCommand = () => {
     navigator.clipboard.writeText(quickCommand)
