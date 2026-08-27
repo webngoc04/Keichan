@@ -516,13 +516,13 @@ export function ApiKeysMutateDrawer({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('Expiration Time')}</FormLabel>
-                    <div className='grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center'>
+                    <div className='flex flex-col gap-2.5'>
                       <FormControl>
                         <DateTimePicker
                           value={field.value}
                           onChange={field.onChange}
                           placeholder={t('Never expires')}
-                          className='min-w-0 [&_input[type=time]]:w-24 sm:[&_input[type=time]]:w-32'
+                          className='w-full'
                         />
                       </FormControl>
                       <div className='flex flex-wrap gap-2'>
@@ -530,7 +530,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                           onClick={() => handleSetExpiry(0, 0, 0)}
                         >
                           {t('Never')}
@@ -539,7 +539,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                           onClick={() => handleSetExpiry(1, 0, 0)}
                         >
                           {t('1 Month')}
@@ -548,7 +548,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                           onClick={() => handleSetExpiry(0, 1, 0)}
                         >
                           {t('1 Day')}
@@ -557,7 +557,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                           onClick={() => handleSetExpiry(0, 0, 1)}
                         >
                           {t('1 Hour')}

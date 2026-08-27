@@ -105,7 +105,7 @@ export function GroupRatioBadge(props: GroupRatioBadgeProps) {
     <Badge
       variant='outline'
       className={cn(
-        'max-w-full truncate text-[10px] sm:text-xs',
+        'max-w-full px-2 py-0.5 text-[10px] sm:text-xs font-mono whitespace-nowrap rounded-full',
         getRatioBadgeClassName(props.ratio, props.isAuto === true)
       )}
     >
@@ -114,14 +114,14 @@ export function GroupRatioBadge(props: GroupRatioBadgeProps) {
   )
 
   if (!props.isAuto) {
-    return <span className='max-w-24 shrink-0 sm:max-w-none'>{badge}</span>
+    return <span className='shrink-0 max-w-full'>{badge}</span>
   }
 
   return (
     <AutoGroupFrame
       effect='ratio'
       shouldReduceMotion={props.shouldReduceMotion ?? false}
-      className='max-w-24 sm:max-w-none'
+      className='shrink-0 max-w-full'
     >
       {badge}
     </AutoGroupFrame>

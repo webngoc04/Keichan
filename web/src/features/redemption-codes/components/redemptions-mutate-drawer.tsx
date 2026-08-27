@@ -323,19 +323,21 @@ export function RedemptionsMutateDrawer({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('Expiration Time')}</FormLabel>
-                      <div className='flex flex-col gap-2'>
+                      <div className='flex flex-col gap-2.5'>
                         <FormControl>
                           <DateTimePicker
                             value={field.value}
                             onChange={field.onChange}
                             placeholder={t('Never expires')}
+                            className='w-full'
                           />
                         </FormControl>
-                        <div className='grid grid-cols-4 gap-1.5 sm:flex sm:gap-2'>
+                        <div className='flex flex-wrap gap-2'>
                           <Button
                             type='button'
                             variant='outline'
                             size='sm'
+                            className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                             onClick={() => handleSetExpiry(0, 0, 0)}
                           >
                             {t('Never')}
@@ -344,22 +346,25 @@ export function RedemptionsMutateDrawer({
                             type='button'
                             variant='outline'
                             size='sm'
+                            className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                             onClick={() => handleSetExpiry(1, 0, 0)}
                           >
-                            {t('1M')}
+                            {t('1 Month')}
                           </Button>
                           <Button
                             type='button'
                             variant='outline'
                             size='sm'
+                            className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                             onClick={() => handleSetExpiry(0, 7, 0)}
                           >
-                            {t('1W')}
+                            {t('1 Week')}
                           </Button>
                           <Button
                             type='button'
                             variant='outline'
                             size='sm'
+                            className='h-8 min-w-0 rounded-full px-3 text-xs whitespace-nowrap'
                             onClick={() => handleSetExpiry(0, 1, 0)}
                           >
                             {t('1 Day')}
