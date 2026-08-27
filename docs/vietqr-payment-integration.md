@@ -110,40 +110,46 @@ Không sử dụng cron polling gây hao pin và nóng máy. Script sử dụng 
 
    print("🚀 MBBank Notification Listener is running...")
 
-   def check_and_forward(content):
-       if "MB" in content or "TK" in content or "SD" in content or "GD" in content:
-           print(f"[{time.strftime('%H:%M:%S')}] Detected MBBank Notification: {content}")
-           try:
-               headers = {
-                   "Content-Type": "application/json",
-                   "X-Webhook-Secret": WEBHOOK_SECRET
-               }
-               payload = {"content": content}
-               resp = requests.post(WEBHOOK_URL, json=payload, headers=headers, timeout=10)
-               print(f"[{time.strftime('%H:%M:%S')}] Server Response: {resp.status_code} - {resp.text}")
-           except Exception as e:
-               print(f"[{time.strftime('%H:%M:%S')}] Forwarding Error: {e}")
+    def check_and_forward(pkg, content):
+        # Strict package guard: ONLY MBBank! Never Telegram or other apps
+        if "telegram" in pkg.lower() or "messenger" in pkg.lower():
+            return
 
-   # Blocking stream logcat filter
-   process = subprocess.Popen(
-       ["logcat", "-v", "brief", "*:S", "NotificationService:V", "StatusBarNotification:V"],
-       stdout=subprocess.PIPE,
-       stderr=subprocess.STDOUT,
-       text=True
-   )
+        # Must be an authentic credit/balance change notification
+        if ("+" in content or "GD:" in content or "SD:" in content or "Biến động" in content) and "ĐƠN NẠP" not in content:
+            print(f"[{time.strftime('%H:%M:%S')}] Detected MBBank Notification: {content}")
+            try:
+                headers = {
+                    "Content-Type": "application/json",
+                    "X-Webhook-Secret": WEBHOOK_SECRET
+                }
+                payload = {"package": pkg, "content": content}
+                resp = requests.post(WEBHOOK_URL, json=payload, headers=headers, timeout=10)
+                print(f"[{time.strftime('%H:%M:%S')}] Server Response: {resp.status_code} - {resp.text}")
+            except Exception as e:
+                print(f"[{time.strftime('%H:%M:%S')}] Forwarding Error: {e}")
 
-   for line in process.stdout:
-       if "MBBank" in line or "mbbank" in line:
-           # Trigger instant check via Termux API
-           try:
-               out = subprocess.check_output(["termux-notification-list"])
-               notifs = json.loads(out)
-               for n in notifs:
-                   if "mbbank" in n.get("packageName", "").lower() or "mb" in n.get("title", "").lower():
-                       full_text = f"{n.get('title', '')} {n.get('content', '')}"
-                       check_and_forward(full_text)
-           except Exception as err:
-               pass
+    # Blocking stream logcat filter
+    process = subprocess.Popen(
+        ["logcat", "-v", "brief", "*:S", "NotificationService:V", "StatusBarNotification:V"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True
+    )
+
+    for line in process.stdout:
+        if "com.mbmobile" in line or "mbbank" in line.lower():
+            # Trigger instant check via Termux API
+            try:
+                out = subprocess.check_output(["termux-notification-list"])
+                notifs = json.loads(out)
+                for n in notifs:
+                    pkg = n.get("packageName", "").lower()
+                    if ("com.mbmobile" in pkg or "mbbank" in pkg) and "telegram" not in pkg:
+                        full_text = f"{n.get('title', '')} {n.get('content', '')}"
+                        check_and_forward(pkg, full_text)
+            except Exception as err:
+                pass
    ```
 5. **Cấu hình Autostart khi khởi động máy**:
    Tạo file `~/.termux/boot/start-mbbank.sh`:

@@ -1385,14 +1385,39 @@ func WebhookVietQR(c *gin.Context) {
 	bodyStr := string(body)
 	logger.LogInfo(context.Background(), "[VietQR-Webhook] Received authorized payload: "+bodyStr)
 
-	// 1. Extract ND: (Nội dung chuyển khoản) section specifically if available
+	// 1. SECURITY: Explicitly reject loopback notifications from Telegram, Bot alerts, or other chat apps
+	lowerBody := strings.ToLower(bodyStr)
+	if strings.Contains(lowerBody, "telegram") ||
+		strings.Contains(lowerBody, "đơn nạp vietqr mới") ||
+		strings.Contains(lowerBody, "kiểm tra tài khoản") ||
+		strings.Contains(lowerBody, "đã duyệt nạp") ||
+		strings.Contains(lowerBody, "đã khớp lệnh") ||
+		strings.Contains(lowerBody, "cảnh báo") {
+		logger.LogWarn(context.Background(), "[VietQR-Webhook] Ignored loopback/Telegram message: "+bodyStr)
+		c.JSON(http.StatusOK, gin.H{"ignored": true, "reason": "loopback_notification"})
+		return
+	}
+
+	// 2. SECURITY: Must be an authentic incoming credit transaction from bank
+	isIncomingBankTx := strings.Contains(bodyStr, "+") ||
+		strings.Contains(lowerBody, "biến động số dư") ||
+		strings.Contains(lowerBody, "nhận tiền") ||
+		strings.Contains(lowerBody, "mbbank") ||
+		strings.Contains(lowerBody, "mbmobile")
+	if !isIncomingBankTx {
+		logger.LogWarn(context.Background(), "[VietQR-Webhook] Ignored non-bank transaction notification: "+bodyStr)
+		c.JSON(http.StatusOK, gin.H{"ignored": true, "reason": "not_incoming_bank_transaction"})
+		return
+	}
+
+	// 3. Extract ND: (Nội dung chuyển khoản) section specifically if available
 	searchTarget := bodyStr
 	ndRe := regexp.MustCompile(`(?i)\bND\s*:\s*(.+)`)
 	if ndMatches := ndRe.FindStringSubmatch(bodyStr); len(ndMatches) > 1 {
 		searchTarget = ndMatches[1]
 	}
 
-	// 2. Scan for trade_no anywhere in ND or body (beginning, middle, end, with spaces/dashes)
+	// 4. Scan for trade_no anywhere in ND or body (beginning, middle, end, with spaces/dashes)
 	codeRe := regexp.MustCompile(`(?i)KC[\s\-_]?([A-Z0-9]{6})`)
 	var candidates []string
 
@@ -1415,9 +1440,15 @@ func WebhookVietQR(c *gin.Context) {
 	for _, candidate := range candidates {
 		topUp := model.GetTopUpByTradeNo(candidate)
 		if topUp != nil && topUp.Status == common.TopUpStatusPending {
-			// SECURITY CHECK: Verify transferred amount from notification text (specifically in GD: section)
+			// SECURITY CHECK: Verify transferred amount from notification text
 			transferredAmount := parseTransferredAmount(bodyStr)
-			if transferredAmount > 0 && transferredAmount < topUp.Money-10 {
+			if transferredAmount <= 0 {
+				logger.LogWarn(context.Background(), fmt.Sprintf("[VietQR-Webhook] Order %s found but transferred amount could not be parsed: %s", candidate, bodyStr))
+				c.JSON(http.StatusOK, gin.H{"ignored": true, "reason": "unparsed_amount"})
+				return
+			}
+
+			if transferredAmount < topUp.Money-10 {
 				logger.LogWarn(context.Background(), fmt.Sprintf("[VietQR-Webhook] Underpaid! Order %s required %.0f VND but received %.0f VND", candidate, topUp.Money, transferredAmount))
 				go sendTelegramUnderpaidAlert(topUp, transferredAmount)
 				c.JSON(http.StatusBadRequest, gin.H{
