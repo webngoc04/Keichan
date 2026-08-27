@@ -2294,7 +2294,7 @@
     "footer.columns.related.links.oneApi": "One API",
     "footer.columns.related.title": "相关项目",
     "footer.defaultCopyright": "版权所有。",
-    "footer.new\u0061pi.projectAttributionSuffix": "版权所有，由项目贡献者设计与开发。",
+    "footer.newapi.projectAttributionSuffix": "版权所有，由项目贡献者设计与开发。",
     "For channels added after May 10, 2025, no need to remove \".\" from model names during deployment": "对于 2025 年 5 月 10 日之后添加的渠道，在部署时无需从模型名称中移除 \".\"",
     "For private deployments, format: https://fastgpt.run/api/openapi": "对于私有部署，格式为：https://fastgpt.run/api/openapi",
     "For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.": "出于安全考虑，现有访问令牌无法再次显示。仅在需要新令牌时重新生成。",
@@ -6040,5 +6040,6 @@
   "Standard framework for building context-aware reasoning applications & agent graphs.": "用于构建上下文感知推理应用和多智能体状态图的标准工业级框架。",
   "Data framework for LLM-based RAG knowledge retrieval and vector indexing.": "专为大模型 RAG 知识检索与向量化索引打造的数据交互框架。",
   "TypeScript toolkit for building reactive AI web applications with streaming.": "用于快速构建响应式流式输出 AI Web 应用的 TypeScript 官方开发工具包。",
-  "AI pair programming in your terminal directly integrated with git repos.": "在终端中与 AI 进行结对编程，深度集成 Git 代码仓库与版本控制。"
+  "AI pair programming in your terminal directly integrated with git repos.": "在终端中与 AI 进行结对编程，深度集成 Git 代码仓库与版本控制。",
+  "Terms of Service": "服务条款"
 }

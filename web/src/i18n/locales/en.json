@@ -2294,7 +2294,7 @@
     "footer.columns.related.links.oneApi": "One API",
     "footer.columns.related.title": "Related Projects",
     "footer.defaultCopyright": "All rights reserved.",
-    "footer.new\u0061pi.projectAttributionSuffix": "All rights reserved. Designed and developed by the project contributors.",
+    "footer.newapi.projectAttributionSuffix": "All rights reserved. Designed and developed by the project contributors.",
     "For channels added after May 10, 2025, no need to remove \".\" from model names during deployment": "For channels added after May 10, 2025, no need to remove \".\" from model names during deployment",
     "For private deployments, format: https://fastgpt.run/api/openapi": "For private deployments, format: https://fastgpt.run/api/openapi",
     "For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.": "For security, existing access tokens cannot be displayed. Regenerate only when you need a new token.",
@@ -6040,5 +6040,6 @@
   "Standard framework for building context-aware reasoning applications & agent graphs.": "Standard framework for building context-aware reasoning applications & agent graphs.",
   "Data framework for LLM-based RAG knowledge retrieval and vector indexing.": "Data framework for LLM-based RAG knowledge retrieval and vector indexing.",
   "TypeScript toolkit for building reactive AI web applications with streaming.": "TypeScript toolkit for building reactive AI web applications with streaming.",
-  "AI pair programming in your terminal directly integrated with git repos.": "AI pair programming in your terminal directly integrated with git repos."
+  "AI pair programming in your terminal directly integrated with git repos.": "AI pair programming in your terminal directly integrated with git repos.",
+  "Terms of Service": "Terms of Service"
 }
