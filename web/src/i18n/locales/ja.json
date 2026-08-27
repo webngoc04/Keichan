@@ -159,7 +159,7 @@
     "about.footer.basedOn": "ベース:",
     "about.footer.product": "Keichan",
     "about.footer.repoLabel": "Keichan プロジェクトリポジトリ:",
-    "about.footer.repoUrl": "https://github.com/Keichan/keichan",
+    "about.footer.repoUrl": "https://github.com/webngoc04/Keichan",
     "about.hero.status": "システム稼働中",
     "about.hero.subtitle": "Keichan は New API のフォークであり、40以上のアップストリームプロバイダーを単一のOpenAI互換インターフェースに統合し、課金、レート制限、可観測性を組み込んだオープンソースAI APIゲートウェイです。",
     "about.hero.title": "Keichan — すべてのAIプロバイダーを統合するゲートウェイ",

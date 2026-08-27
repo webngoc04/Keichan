@@ -37,7 +37,7 @@ import { isHttpUrl, isLikelyHtml } from '@/lib/content-format'
 
 import { getAboutContent } from './api'
 
-const KEICHAN_REPO = 'https://github.com/Keichan/keichan'
+const KEICHAN_REPO = 'https://github.com/webngoc04/Keichan'
 const NEW_API_REPO = 'https://github.com/QuantumNous/new-api'
 const QUANTUMNOUS_REPO = 'https://github.com/QuantumNous'
 const ONE_API_REPO = 'https://github.com/songquanpeng/one-api'

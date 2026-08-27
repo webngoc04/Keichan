@@ -159,7 +159,7 @@
     "about.footer.basedOn": "基於",
     "about.footer.product": "Keichan",
     "about.footer.repoLabel": "Keichan 專案儲存庫：",
-    "about.footer.repoUrl": "https://github.com/Keichan/keichan",
+    "about.footer.repoUrl": "https://github.com/webngoc04/Keichan",
     "about.hero.status": "系統上線",
     "about.hero.subtitle": "Keichan 是 New API 的分支，一個開源 AI API 閘道器，將 40+ 上游服務商統一在單個相容 OpenAI 的介面下，內建計費、速率限制和可觀測性。",
     "about.hero.title": "Keichan — 連接所有 AI 模型的統一閘道器",

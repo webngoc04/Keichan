@@ -159,7 +159,7 @@
     "about.footer.basedOn": "based on",
     "about.footer.product": "Keichan",
     "about.footer.repoLabel": "Keichan Project Repository:",
-    "about.footer.repoUrl": "https://github.com/Keichan/keichan",
+    "about.footer.repoUrl": "https://github.com/webngoc04/Keichan",
     "about.hero.status": "SYSTEM ONLINE",
     "about.hero.subtitle": "Keichan is a fork of New API, an open-source AI API gateway that unifies 40+ upstream providers behind a single, OpenAI-compatible interface — with billing, rate limiting, and observability built in.",
     "about.hero.title": "Keichan — one gateway for every AI provider",

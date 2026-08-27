@@ -159,7 +159,7 @@
     "about.footer.basedOn": "基于",
     "about.footer.product": "Keichan",
     "about.footer.repoLabel": "Keichan 项目仓库：",
-    "about.footer.repoUrl": "https://github.com/Keichan/keichan",
+    "about.footer.repoUrl": "https://github.com/webngoc04/Keichan",
     "about.hero.status": "系统在线",
     "about.hero.subtitle": "Keichan 是 New API 的分支，一个开源 AI API 网关，将 40+ 上游服务商统一在单个兼容 OpenAI 的接口下，内置计费、速率限制和可观测性。",
     "about.hero.title": "Keichan — 连接所有 AI 模型的统一网关",
