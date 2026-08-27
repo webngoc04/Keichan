@@ -195,6 +195,8 @@ export function Footer(props: FooterProps) {
         links: [
           { text: 'About', href: '/about' },
           { text: 'Blog & Releases', href: '/blogs' },
+          { text: 'Terms of Service', href: '/terms' },
+          { text: 'Privacy Policy', href: '/privacy' },
           { text: 'Careers', href: '/careers' },
           { text: 'Brand Assets', href: '/brand' },
           { text: 'Support & Community', href: '/support' },
