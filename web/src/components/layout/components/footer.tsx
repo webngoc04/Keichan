@@ -165,41 +165,20 @@ export function Footer(props: FooterProps) {
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
       {
-        title: 'Ecosystem & Models',
+        title: 'Product & Services',
         links: [
           { text: 'Models & Pricing', href: '/pricing' },
-          { text: 'Model Benchmarks', href: '/benchmarks' },
           { text: 'AI Web Chat', href: '/dashboard' },
-          { text: 'Rankings & Volume', href: '/rankings' },
-          { text: 'Curated Collections', href: '/collections' },
-        ],
-      },
-      {
-        title: 'Apps & Providers',
-        links: [
-          { text: 'Apps & Tools', href: '/apps' },
-          { text: 'Upstream Providers', href: '/providers' },
-          { text: 'Enterprise Solutions', href: '/enterprise' },
-        ],
-      },
-      {
-        title: 'Developers & Labs',
-        links: [
           { text: 'API Documentation', href: '/docs' },
-          { text: 'Data & Telemetry', href: '/data' },
-          { text: 'Keichan Labs', href: '/labs' },
         ],
       },
       {
-        title: 'Company & Support',
+        title: 'Support & Legal',
         links: [
           { text: 'About', href: '/about' },
-          { text: 'Blog & Releases', href: '/blogs' },
+          { text: 'Support & Community', href: '/support' },
           { text: 'Terms of Service', href: '/terms' },
           { text: 'Privacy Policy', href: '/privacy' },
-          { text: 'Careers', href: '/careers' },
-          { text: 'Brand Assets', href: '/brand' },
-          { text: 'Support & Community', href: '/support' },
         ],
       },
     ],
@@ -260,7 +239,7 @@ export function Footer(props: FooterProps) {
           </div>
 
           {/* Links columns */}
-          <div className='grid grid-cols-2 gap-8 sm:grid-cols-4 md:gap-12'>
+          <div className='grid grid-cols-2 gap-8 sm:gap-16 md:gap-24'>
             {displayColumns.map((column) => (
               <div key={column.title}>
                 <p className='text-muted-foreground/60 mb-3 text-xs font-semibold tracking-wider uppercase font-mono'>

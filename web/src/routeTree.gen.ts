@@ -31,22 +31,11 @@ import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as AuthenticatedChat2linkRouteImport } from './routes/_authenticated/chat2link'
 import { Route as AuthenticatedSystemSettingsRouteRouteImport } from './routes/_authenticated/system-settings/route'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as AppsIndexRouteImport } from './routes/apps/index'
-import { Route as BenchmarksIndexRouteImport } from './routes/benchmarks/index'
-import { Route as BlogsIndexRouteImport } from './routes/blogs/index'
-import { Route as BrandIndexRouteImport } from './routes/brand/index'
-import { Route as CareersIndexRouteImport } from './routes/careers/index'
-import { Route as CollectionsIndexRouteImport } from './routes/collections/index'
-import { Route as DataIndexRouteImport } from './routes/data/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
-import { Route as EnterpriseIndexRouteImport } from './routes/enterprise/index'
-import { Route as LabsIndexRouteImport } from './routes/labs/index'
 import { Route as ModelsIndexRouteImport } from './routes/models/index'
 import { Route as ModelsSectionRouteImport } from './routes/models/$section'
 import { Route as OauthProviderRouteImport } from './routes/oauth/$provider'
 import { Route as PricingIndexRouteImport } from './routes/pricing/index'
-import { Route as ProvidersIndexRouteImport } from './routes/providers/index'
-import { Route as RankingsIndexRouteImport } from './routes/rankings/index'
 import { Route as SetupIndexRouteImport } from './routes/setup/index'
 import { Route as SupportIndexRouteImport } from './routes/support/index'
 import { Route as authUserResetRouteImport } from './routes/(auth)/user/reset'
@@ -191,54 +180,9 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
   path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppsIndexRoute = AppsIndexRouteImport.update({
-  id: '/apps/',
-  path: '/apps/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BenchmarksIndexRoute = BenchmarksIndexRouteImport.update({
-  id: '/benchmarks/',
-  path: '/benchmarks/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogsIndexRoute = BlogsIndexRouteImport.update({
-  id: '/blogs/',
-  path: '/blogs/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BrandIndexRoute = BrandIndexRouteImport.update({
-  id: '/brand/',
-  path: '/brand/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CareersIndexRoute = CareersIndexRouteImport.update({
-  id: '/careers/',
-  path: '/careers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
-  id: '/collections/',
-  path: '/collections/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DataIndexRoute = DataIndexRouteImport.update({
-  id: '/data/',
-  path: '/data/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/docs/',
   path: '/docs/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EnterpriseIndexRoute = EnterpriseIndexRouteImport.update({
-  id: '/enterprise/',
-  path: '/enterprise/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabsIndexRoute = LabsIndexRouteImport.update({
-  id: '/labs/',
-  path: '/labs/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModelsIndexRoute = ModelsIndexRouteImport.update({
@@ -259,16 +203,6 @@ const OauthProviderRoute = OauthProviderRouteImport.update({
 const PricingIndexRoute = PricingIndexRouteImport.update({
   id: '/pricing/',
   path: '/pricing/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProvidersIndexRoute = ProvidersIndexRouteImport.update({
-  id: '/providers/',
-  path: '/providers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RankingsIndexRoute = RankingsIndexRouteImport.update({
-  id: '/rankings/',
-  path: '/rankings/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SetupIndexRoute = SetupIndexRouteImport.update({
@@ -492,20 +426,9 @@ export interface FileRoutesByFullPath {
   '/models/$section': typeof ModelsSectionRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/about/': typeof AboutIndexRoute
-  '/apps/': typeof AppsIndexRoute
-  '/benchmarks/': typeof BenchmarksIndexRoute
-  '/blogs/': typeof BlogsIndexRoute
-  '/brand/': typeof BrandIndexRoute
-  '/careers/': typeof CareersIndexRoute
-  '/collections/': typeof CollectionsIndexRoute
-  '/data/': typeof DataIndexRoute
   '/docs/': typeof DocsIndexRoute
-  '/enterprise/': typeof EnterpriseIndexRoute
-  '/labs/': typeof LabsIndexRoute
   '/models/': typeof ModelsIndexRoute
   '/pricing/': typeof PricingIndexRoute
-  '/providers/': typeof ProvidersIndexRoute
-  '/rankings/': typeof RankingsIndexRoute
   '/setup/': typeof SetupIndexRoute
   '/support/': typeof SupportIndexRoute
   '/user/reset': typeof authUserResetRoute
@@ -563,20 +486,9 @@ export interface FileRoutesByTo {
   '/models/$section': typeof ModelsSectionRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/about': typeof AboutIndexRoute
-  '/apps': typeof AppsIndexRoute
-  '/benchmarks': typeof BenchmarksIndexRoute
-  '/blogs': typeof BlogsIndexRoute
-  '/brand': typeof BrandIndexRoute
-  '/careers': typeof CareersIndexRoute
-  '/collections': typeof CollectionsIndexRoute
-  '/data': typeof DataIndexRoute
   '/docs': typeof DocsIndexRoute
-  '/enterprise': typeof EnterpriseIndexRoute
-  '/labs': typeof LabsIndexRoute
   '/models': typeof ModelsIndexRoute
   '/pricing': typeof PricingIndexRoute
-  '/providers': typeof ProvidersIndexRoute
-  '/rankings': typeof RankingsIndexRoute
   '/setup': typeof SetupIndexRoute
   '/support': typeof SupportIndexRoute
   '/user/reset': typeof authUserResetRoute
@@ -638,20 +550,9 @@ export interface FileRoutesById {
   '/models/$section': typeof ModelsSectionRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/about/': typeof AboutIndexRoute
-  '/apps/': typeof AppsIndexRoute
-  '/benchmarks/': typeof BenchmarksIndexRoute
-  '/blogs/': typeof BlogsIndexRoute
-  '/brand/': typeof BrandIndexRoute
-  '/careers/': typeof CareersIndexRoute
-  '/collections/': typeof CollectionsIndexRoute
-  '/data/': typeof DataIndexRoute
   '/docs/': typeof DocsIndexRoute
-  '/enterprise/': typeof EnterpriseIndexRoute
-  '/labs/': typeof LabsIndexRoute
   '/models/': typeof ModelsIndexRoute
   '/pricing/': typeof PricingIndexRoute
-  '/providers/': typeof ProvidersIndexRoute
-  '/rankings/': typeof RankingsIndexRoute
   '/setup/': typeof SetupIndexRoute
   '/support/': typeof SupportIndexRoute
   '/(auth)/user/reset': typeof authUserResetRoute
@@ -712,20 +613,9 @@ export interface FileRouteTypes {
     | '/models/$section'
     | '/oauth/$provider'
     | '/about/'
-    | '/apps/'
-    | '/benchmarks/'
-    | '/blogs/'
-    | '/brand/'
-    | '/careers/'
-    | '/collections/'
-    | '/data/'
     | '/docs/'
-    | '/enterprise/'
-    | '/labs/'
     | '/models/'
     | '/pricing/'
-    | '/providers/'
-    | '/rankings/'
     | '/setup/'
     | '/support/'
     | '/user/reset'
@@ -783,20 +673,9 @@ export interface FileRouteTypes {
     | '/models/$section'
     | '/oauth/$provider'
     | '/about'
-    | '/apps'
-    | '/benchmarks'
-    | '/blogs'
-    | '/brand'
-    | '/careers'
-    | '/collections'
-    | '/data'
     | '/docs'
-    | '/enterprise'
-    | '/labs'
     | '/models'
     | '/pricing'
-    | '/providers'
-    | '/rankings'
     | '/setup'
     | '/support'
     | '/user/reset'
@@ -857,20 +736,9 @@ export interface FileRouteTypes {
     | '/models/$section'
     | '/oauth/$provider'
     | '/about/'
-    | '/apps/'
-    | '/benchmarks/'
-    | '/blogs/'
-    | '/brand/'
-    | '/careers/'
-    | '/collections/'
-    | '/data/'
     | '/docs/'
-    | '/enterprise/'
-    | '/labs/'
     | '/models/'
     | '/pricing/'
-    | '/providers/'
-    | '/rankings/'
     | '/setup/'
     | '/support/'
     | '/(auth)/user/reset'
@@ -923,20 +791,9 @@ export interface RootRouteChildren {
   ModelsSectionRoute: typeof ModelsSectionRoute
   OauthProviderRoute: typeof OauthProviderRoute
   AboutIndexRoute: typeof AboutIndexRoute
-  AppsIndexRoute: typeof AppsIndexRoute
-  BenchmarksIndexRoute: typeof BenchmarksIndexRoute
-  BlogsIndexRoute: typeof BlogsIndexRoute
-  BrandIndexRoute: typeof BrandIndexRoute
-  CareersIndexRoute: typeof CareersIndexRoute
-  CollectionsIndexRoute: typeof CollectionsIndexRoute
-  DataIndexRoute: typeof DataIndexRoute
   DocsIndexRoute: typeof DocsIndexRoute
-  EnterpriseIndexRoute: typeof EnterpriseIndexRoute
-  LabsIndexRoute: typeof LabsIndexRoute
   ModelsIndexRoute: typeof ModelsIndexRoute
   PricingIndexRoute: typeof PricingIndexRoute
-  ProvidersIndexRoute: typeof ProvidersIndexRoute
-  RankingsIndexRoute: typeof RankingsIndexRoute
   SetupIndexRoute: typeof SetupIndexRoute
   SupportIndexRoute: typeof SupportIndexRoute
   PricingModelIdIndexRoute: typeof PricingModelIdIndexRoute
@@ -1098,74 +955,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/apps/': {
-      id: '/apps/'
-      path: '/apps'
-      fullPath: '/apps/'
-      preLoaderRoute: typeof AppsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/benchmarks/': {
-      id: '/benchmarks/'
-      path: '/benchmarks'
-      fullPath: '/benchmarks/'
-      preLoaderRoute: typeof BenchmarksIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blogs/': {
-      id: '/blogs/'
-      path: '/blogs'
-      fullPath: '/blogs/'
-      preLoaderRoute: typeof BlogsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/brand/': {
-      id: '/brand/'
-      path: '/brand'
-      fullPath: '/brand/'
-      preLoaderRoute: typeof BrandIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/careers/': {
-      id: '/careers/'
-      path: '/careers'
-      fullPath: '/careers/'
-      preLoaderRoute: typeof CareersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/collections/': {
-      id: '/collections/'
-      path: '/collections'
-      fullPath: '/collections/'
-      preLoaderRoute: typeof CollectionsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/data/': {
-      id: '/data/'
-      path: '/data'
-      fullPath: '/data/'
-      preLoaderRoute: typeof DataIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/docs/': {
       id: '/docs/'
       path: '/docs'
       fullPath: '/docs/'
       preLoaderRoute: typeof DocsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/enterprise/': {
-      id: '/enterprise/'
-      path: '/enterprise'
-      fullPath: '/enterprise/'
-      preLoaderRoute: typeof EnterpriseIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/labs/': {
-      id: '/labs/'
-      path: '/labs'
-      fullPath: '/labs/'
-      preLoaderRoute: typeof LabsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/models/': {
@@ -1194,20 +988,6 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing/'
       preLoaderRoute: typeof PricingIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/providers/': {
-      id: '/providers/'
-      path: '/providers'
-      fullPath: '/providers/'
-      preLoaderRoute: typeof ProvidersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rankings/': {
-      id: '/rankings/'
-      path: '/rankings'
-      fullPath: '/rankings/'
-      preLoaderRoute: typeof RankingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/setup/': {
@@ -1595,20 +1375,9 @@ const rootRouteChildren: RootRouteChildren = {
   ModelsSectionRoute: ModelsSectionRoute,
   OauthProviderRoute: OauthProviderRoute,
   AboutIndexRoute: AboutIndexRoute,
-  AppsIndexRoute: AppsIndexRoute,
-  BenchmarksIndexRoute: BenchmarksIndexRoute,
-  BlogsIndexRoute: BlogsIndexRoute,
-  BrandIndexRoute: BrandIndexRoute,
-  CareersIndexRoute: CareersIndexRoute,
-  CollectionsIndexRoute: CollectionsIndexRoute,
-  DataIndexRoute: DataIndexRoute,
   DocsIndexRoute: DocsIndexRoute,
-  EnterpriseIndexRoute: EnterpriseIndexRoute,
-  LabsIndexRoute: LabsIndexRoute,
   ModelsIndexRoute: ModelsIndexRoute,
   PricingIndexRoute: PricingIndexRoute,
-  ProvidersIndexRoute: ProvidersIndexRoute,
-  RankingsIndexRoute: RankingsIndexRoute,
   SetupIndexRoute: SetupIndexRoute,
   SupportIndexRoute: SupportIndexRoute,
   PricingModelIdIndexRoute: PricingModelIdIndexRoute,

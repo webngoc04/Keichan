@@ -112,7 +112,7 @@ export function RechargeFormCard({
   onWaffoMethodSelect,
   enableWaffoPancakeTopup,
 }: RechargeFormCardProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
 
   useEffect(() => {
@@ -133,11 +133,22 @@ export function RechargeFormCard({
   const hasConfigurableTopup =
     topupInfo?.enable_online_topup ||
     topupInfo?.enable_stripe_topup ||
+    topupInfo?.enable_nowpayments_topup ||
+    topupInfo?.enable_payos_topup ||
+    topupInfo?.enable_vietqr_topup ||
     enableWaffoTopup ||
     enableWaffoPancakeTopup
   const hasAnyTopup = hasConfigurableTopup || enableCreemTopup
-  const hasStandardPaymentMethods =
-    Array.isArray(topupInfo?.pay_methods) && topupInfo.pay_methods.length > 0
+
+  const isVietnamese = i18n.language?.toLowerCase().startsWith('vi')
+  const availablePayMethods = (topupInfo?.pay_methods || []).filter((method) => {
+    if (method.type === 'vietqr') {
+      return isVietnamese
+    }
+    return true
+  })
+
+  const hasStandardPaymentMethods = availablePayMethods.length > 0
   const hasWaffoPaymentMethods =
     Array.isArray(waffoPayMethods) && waffoPayMethods.length > 0
   const minTopup = getMinTopupAmount(topupInfo)
@@ -311,7 +322,9 @@ export function RechargeFormCard({
                       <Skeleton className='h-5 w-16' />
                     ) : (
                       <span className='text-sm font-semibold'>
-                        {formatCurrency(paymentAmount)}
+                        {paymentAmount >= 1000
+                          ? `${new Intl.NumberFormat('vi-VN').format(paymentAmount)} VNĐ`
+                          : formatCurrency(paymentAmount)}
                       </span>
                     )}
                   </div>
@@ -324,7 +337,7 @@ export function RechargeFormCard({
                 </Label>
                 {hasStandardPaymentMethods ? (
                   <div className='grid grid-auto-3 gap-3'>
-                    {topupInfo?.pay_methods?.map((method) => {
+                    {availablePayMethods.map((method) => {
                       const minTopup = Math.max(
                         method.min_topup || 0,
                         getMinTopupAmount(topupInfo)

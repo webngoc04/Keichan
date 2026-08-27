@@ -27,6 +27,7 @@ import {
   calculateWaffoPancakeAmount,
   calculatePayosAmount,
   calculateNowpaymentsAmount,
+  calculateVietQRAmount,
   requestPayment,
   requestStripePayment,
   isApiSuccess,
@@ -37,6 +38,7 @@ import {
   isWaffoPancakePayment,
   isPayosPayment,
   isNowpaymentsPayment,
+  isVietQRPayment,
   submitPaymentForm,
 } from '../lib'
 import type { AmountRequest, AmountResponse } from '../types'
@@ -54,6 +56,7 @@ export interface PaymentAmountCalculators {
   waffoPancake: AmountCalculator
   payos: AmountCalculator
   nowpayments: AmountCalculator
+  vietqr?: (amount: number) => Promise<{ success?: boolean; data?: { vnd: number } }>
 }
 
 const defaultPaymentAmountCalculators: PaymentAmountCalculators = {
@@ -63,6 +66,7 @@ const defaultPaymentAmountCalculators: PaymentAmountCalculators = {
   waffoPancake: calculateWaffoPancakeAmount,
   payos: calculatePayosAmount,
   nowpayments: calculateNowpaymentsAmount,
+  vietqr: calculateVietQRAmount,
 }
 
 export async function requestPaymentAmount(
@@ -70,6 +74,15 @@ export async function requestPaymentAmount(
   paymentType: string,
   calculators: PaymentAmountCalculators = defaultPaymentAmountCalculators
 ): Promise<number> {
+  if (isVietQRPayment(paymentType)) {
+    const calc = calculators.vietqr || calculateVietQRAmount
+    const res = await calc(topupAmount)
+    if (res && res.success && res.data) {
+      return res.data.vnd
+    }
+    return 0
+  }
+
   let calculator = calculators.regular
   if (isStripePayment(paymentType)) {
     calculator = calculators.stripe

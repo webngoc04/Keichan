@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
 import { FileWarning } from 'lucide-react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
@@ -54,6 +55,21 @@ export function LegalDocument({
   const isUrl = hasContent && isHttpUrl(rawContent)
   const contentIsHtml = hasContent && isLikelyHtml(rawContent)
   const success = data?.success ?? false
+
+  useEffect(() => {
+    if (!hasContent || isUrl) return
+    const hash = window.location.hash
+    if (hash) {
+      const id = decodeURIComponent(hash.replace(/^#/, ''))
+      const timer = setTimeout(() => {
+        const element = document.getElementById(id)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 150)
+      return () => clearTimeout(timer)
+    }
+  }, [hasContent, isUrl, rawContent])
 
   if (isLoading) {
     return (

@@ -38,12 +38,13 @@ export const PAYMENT_TYPES = {
   WAFFO_PANCAKE: 'waffo_pancake',
   PAYOS: 'payos',
   NOWPAYMENTS: 'nowpayments',
+  VIETQR: 'vietqr',
 } as const
 
 /**
  * Default payment type
  */
-export const DEFAULT_PAYMENT_TYPE = PAYMENT_TYPES.ALIPAY
+export const DEFAULT_PAYMENT_TYPE = PAYMENT_TYPES.NOWPAYMENTS
 
 /**
  * Payment icon colors (HEX format for react-icons)
@@ -57,6 +58,7 @@ export const PAYMENT_ICON_COLORS = {
   [PAYMENT_TYPES.WAFFO_PANCAKE]: '#F97316',
   [PAYMENT_TYPES.PAYOS]: '#00C4B3',
   [PAYMENT_TYPES.NOWPAYMENTS]: '#F7931A',
+  [PAYMENT_TYPES.VIETQR]: '#005BAA',
 } as const
 
 /**

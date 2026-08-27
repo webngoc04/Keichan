@@ -124,31 +124,15 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 </div>
                 <span className='text-emerald-400 font-semibold'>200 OK</span>
               </div>
-              <div className='p-4 space-y-2 text-muted-foreground text-[11.5px] leading-relaxed'>
+              <div className='p-4 space-y-2 text-muted-foreground text-[11.5px] leading-relaxed font-mono'>
                 <div className='text-foreground/90'>
-                  <span className='text-primary'>$</span> curl -X POST {typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://keichan.indevs.in'}/v1/chat/completions \
+                  <span className='text-primary'>POST</span> {typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://keichan.indevs.in'}/v1/chat/completions
                 </div>
-                <div className='pl-3 text-muted-foreground'>
-                  -H &quot;Authorization: Bearer sk-••••••••••••&quot;
-                </div>
-                <div className='pt-2 border-t border-border/40 text-emerald-400 flex items-center gap-2'>
+                <div className='pt-2 border-t border-border/40 text-emerald-400 flex items-center gap-2 font-sans'>
                   <Check className='size-3.5' />
                   <span>{t('Token Verified: Full Model Quota Active')}</span>
                 </div>
               </div>
-            </div>
-
-            {/* Feature Pills */}
-            <div className='flex flex-wrap items-center gap-2 font-mono text-[11px] text-muted-foreground'>
-              <span className='rounded-full border border-border/80 bg-card/40 px-3 py-1'>
-                [AES-256 VAULT]
-              </span>
-              <span className='rounded-full border border-border/80 bg-card/40 px-3 py-1'>
-                [PASSKEY FIDO2]
-              </span>
-              <span className='rounded-full border border-border/80 bg-card/40 px-3 py-1'>
-                [99.9% UPTIME]
-              </span>
             </div>
           </div>
 

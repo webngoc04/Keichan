@@ -283,7 +283,7 @@ export function PricingPlans({ onContactEnterprise }: PricingPlansProps) {
               </li>
               <li className='flex items-start gap-2.5'>
                 <Clock className='text-amber-400 mt-0.5 size-3.5 shrink-0' />
-                <span>{t('99.9% Uptime SLA & 24/7 technical support')}</span>
+                <span>{t('Dedicated SLA & 24/7 technical support')}</span>
               </li>
               <li className='flex items-start gap-2.5'>
                 <Clock className='text-amber-400 mt-0.5 size-3.5 shrink-0' />

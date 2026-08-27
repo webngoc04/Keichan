@@ -44,7 +44,7 @@ export function Hero(props: HeroProps) {
       ? window.location.origin
       : 'https://keichan.indevs.in')
 
-  const quickCommand = `curl -X POST ${currentOrigin}/v1/chat/completions -H "Authorization: Bearer sk-..."`
+  const quickCommand = `${currentOrigin}/v1/chat/completions`
 
   const handleCopyCommand = () => {
     navigator.clipboard.writeText(quickCommand)

@@ -4,6 +4,7 @@
 common.invalid_params: "Invalid parameters"
 common.database_error: "Database error, please contact the administrator"
 common.retry_later: "Please try again later"
+common.rate_limit: "You are sending requests too quickly. Please try again in a moment."
 common.generate_failed: "Generation failed"
 common.not_found: "Not found"
 common.unauthorized: "Unauthorized"

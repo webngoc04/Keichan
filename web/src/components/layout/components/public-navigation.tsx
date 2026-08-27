@@ -33,7 +33,6 @@ export function PublicNavigation({ className }: PublicNavigationProps = {}) {
     { title: t('Home'), href: '/' },
     { title: t('Models'), href: '/models/' },
     { title: t('Pricing'), href: '/pricing' },
-    { title: t('Rankings'), href: '/rankings' },
     { title: t('Docs'), href: '/docs' },
     { title: t('About'), href: '/about' },
   ]

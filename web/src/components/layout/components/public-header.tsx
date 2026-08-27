@@ -305,7 +305,6 @@ export function PublicHeader(props: PublicHeaderProps) {
               { title: t('Home'), href: '/' },
               { title: t('Models'), href: '/models' },
               { title: t('Pricing'), href: '/pricing' },
-              { title: t('Rankings'), href: '/rankings' },
               { title: t('Docs'), href: '/docs' },
               { title: t('About'), href: '/about' },
             ].map((link) => {

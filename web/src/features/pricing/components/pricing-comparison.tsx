@@ -114,10 +114,10 @@ export function PricingComparison() {
       title: t('Support & Service Level'),
       features: [
         {
-          name: t('Uptime SLA guarantee'),
+          name: t('Service Level Objective'),
           free: t('Best effort'),
-          payg: t('Standard 99.5%'),
-          enterprise: t('Guaranteed 99.9%'),
+          payg: t('High availability'),
+          enterprise: t('Custom SLA contract'),
         },
         {
           name: t('Support channel'),

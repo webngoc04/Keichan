@@ -124,4 +124,45 @@ describe('payment amount routing', () => {
     expect(amount).toBe(6)
     expect(calls).toEqual(['nowpayments:5'])
   })
+
+  test('uses the dedicated VietQR amount calculator', async () => {
+    const calls: string[] = []
+    const amount = await requestPaymentAmount(
+      2,
+      PAYMENT_TYPES.VIETQR,
+      {
+        regular: async () => {
+          calls.push('regular')
+          return { success: true, data: '1' }
+        },
+        stripe: async () => {
+          calls.push('stripe')
+          return { success: true, data: '2' }
+        },
+        waffo: async () => {
+          calls.push('waffo')
+          return { success: true, data: '3' }
+        },
+        waffoPancake: async () => {
+          calls.push('pancake')
+          return { success: true, data: '4' }
+        },
+        payos: async () => {
+          calls.push('payos')
+          return { success: true, data: '260000' }
+        },
+        nowpayments: async () => {
+          calls.push('nowpayments')
+          return { success: true, data: '6' }
+        },
+        vietqr: async (topupAmount) => {
+          calls.push(`vietqr:${topupAmount}`)
+          return { success: true, data: { vnd: 52673 } }
+        },
+      }
+    )
+
+    expect(amount).toBe(52673)
+    expect(calls).toEqual(['vietqr:2'])
+  })
 })

@@ -26,6 +26,7 @@ import {
   isWaffoPancakePayment,
   isPayosPayment,
   isNowpaymentsPayment,
+  isVietQRPayment,
 } from './payment'
 
 describe('payment type classification', () => {
@@ -37,11 +38,13 @@ describe('payment type classification', () => {
     expect(isStripePayment(PAYMENT_TYPES.STRIPE)).toBe(true)
   })
 
-  test('classifies PayOS and NOWPayments as dedicated hosted-checkout flows', () => {
+  test('classifies PayOS, NOWPayments, and VietQR as dedicated flows', () => {
     expect(isPayosPayment(PAYMENT_TYPES.PAYOS)).toBe(true)
     expect(isPayosPayment(PAYMENT_TYPES.ALIPAY)).toBe(false)
     expect(isNowpaymentsPayment(PAYMENT_TYPES.NOWPAYMENTS)).toBe(true)
     expect(isNowpaymentsPayment(PAYMENT_TYPES.STRIPE)).toBe(false)
+    expect(isVietQRPayment(PAYMENT_TYPES.VIETQR)).toBe(true)
+    expect(isVietQRPayment(PAYMENT_TYPES.ALIPAY)).toBe(false)
   })
 })
 
@@ -67,6 +70,7 @@ describe('payment dispatch', () => {
         },
         payos: async () => false,
         nowpayments: async () => false,
+        vietqr: async () => false,
       }
     )
 
@@ -74,7 +78,7 @@ describe('payment dispatch', () => {
     expect(calls).toEqual(['waffo:120:3'])
   })
 
-  test('routes PayOS and NOWPayments to their dedicated processors', async () => {
+  test('routes PayOS, NOWPayments, and VietQR to their dedicated processors', async () => {
     const calls: string[] = []
 
     const payosSuccess = await dispatchSelectedPayment(
@@ -82,23 +86,15 @@ describe('payment dispatch', () => {
       10,
       null,
       {
-        regular: async () => {
-          calls.push('regular')
-          return false
-        },
-        waffo: async () => {
-          calls.push('waffo')
-          return false
-        },
-        waffoPancake: async () => {
-          calls.push('pancake')
-          return false
-        },
+        regular: async () => false,
+        waffo: async () => false,
+        waffoPancake: async () => false,
         payos: async (amount) => {
           calls.push(`payos:${amount}`)
           return true
         },
         nowpayments: async () => false,
+        vietqr: async () => false,
       }
     )
     const nowpaymentsSuccess = await dispatchSelectedPayment(
@@ -106,21 +102,29 @@ describe('payment dispatch', () => {
       5,
       null,
       {
-        regular: async () => {
-          calls.push('regular')
-          return false
-        },
-        waffo: async () => {
-          calls.push('waffo')
-          return false
-        },
-        waffoPancake: async () => {
-          calls.push('pancake')
-          return false
-        },
+        regular: async () => false,
+        waffo: async () => false,
+        waffoPancake: async () => false,
         payos: async () => false,
         nowpayments: async (amount) => {
           calls.push(`nowpayments:${amount}`)
+          return true
+        },
+        vietqr: async () => false,
+      }
+    )
+    const vietqrSuccess = await dispatchSelectedPayment(
+      { name: 'VietQR (MB Bank)', type: PAYMENT_TYPES.VIETQR },
+      2,
+      null,
+      {
+        regular: async () => false,
+        waffo: async () => false,
+        waffoPancake: async () => false,
+        payos: async () => false,
+        nowpayments: async () => false,
+        vietqr: async (amount) => {
+          calls.push(`vietqr:${amount}`)
           return true
         },
       }
@@ -128,7 +132,8 @@ describe('payment dispatch', () => {
 
     expect(payosSuccess).toBe(true)
     expect(nowpaymentsSuccess).toBe(true)
-    expect(calls).toEqual(['payos:10', 'nowpayments:5'])
+    expect(vietqrSuccess).toBe(true)
+    expect(calls).toEqual(['payos:10', 'nowpayments:5', 'vietqr:2'])
   })
 
   test('does not create a Waffo order without a selected method index', async () => {
@@ -146,6 +151,7 @@ describe('payment dispatch', () => {
         waffoPancake: async () => false,
         payos: async () => false,
         nowpayments: async () => false,
+        vietqr: async () => false,
       }
     )
 

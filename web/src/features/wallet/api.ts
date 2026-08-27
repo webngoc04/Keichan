@@ -41,6 +41,7 @@ import type {
   WaffoPancakePaymentResponse,
   PayosPaymentResponse,
   NowpaymentsPaymentResponse,
+  VietQRTopUpResponse,
 } from './types'
 
 // ============================================================================
@@ -226,6 +227,42 @@ export async function requestNowpaymentsPayment(
   request: WaffoPancakePaymentRequest
 ): Promise<NowpaymentsPaymentResponse> {
   const res = await api.post('/api/user/nowpayments/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Calculate amount for VietQR payment
+ */
+export async function calculateVietQRAmount(
+  amount: number
+): Promise<ApiResponse<{ usd: number; vnd: number; rate: number; fee_ratio: number; bank_id: string; account_no: string }>> {
+  const res = await api.post('/api/user/vietqr/amount', { amount }, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Request VietQR payment (returns dynamic VietQR code, bank info, memo)
+ */
+export async function requestVietQRPayment(
+  amount: number
+): Promise<VietQRTopUpResponse> {
+  const res = await api.post('/api/user/vietqr/pay', { amount }, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Check VietQR payment status
+ */
+export async function checkVietQRStatus(
+  tradeNo: string
+): Promise<ApiResponse<{ trade_no: string; status: string; amount: number; money: number; complete_time: number }>> {
+  const res = await api.get(`/api/user/vietqr/status?trade_no=${encodeURIComponent(tradeNo)}`, {
     skipBusinessError: true,
   } as Record<string, unknown>)
   return res.data

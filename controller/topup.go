@@ -25,9 +25,9 @@ import (
 func GetTopUpInfo(c *gin.Context) {
 	complianceConfirmed := operation_setting.IsPaymentComplianceConfirmed()
 
-	// 获取支付方式
+	// 获取支付方式 (只有在配置了 Epay 且合规时才返回 Epay 方式)
 	payMethods := operation_setting.PayMethods
-	if !complianceConfirmed {
+	if !complianceConfirmed || !isEpayTopUpEnabled() {
 		payMethods = []map[string]string{}
 	}
 
@@ -141,6 +141,27 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	enableVietQR := setting.VietQREnabled && IsVietnamIP(c)
+	if enableVietQR {
+		hasVietQR := false
+		for _, method := range payMethods {
+			if method["type"] == model.PaymentMethodVietQR {
+				hasVietQR = true
+				break
+			}
+		}
+
+		if !hasVietQR {
+			vietqrMethod := map[string]string{
+				"name":      "VietQR (MB Bank)",
+				"type":      model.PaymentMethodVietQR,
+				"color":     "#005BAA",
+				"min_topup": strconv.Itoa(setting.VietQRMinTopUp),
+			}
+			payMethods = append(payMethods, vietqrMethod)
+		}
+	}
+
 	data := gin.H{
 		"enable_online_topup":              isEpayTopUpEnabled(),
 		"enable_stripe_topup":              isStripeTopUpEnabled(),
@@ -149,6 +170,11 @@ func GetTopUpInfo(c *gin.Context) {
 		"enable_waffo_pancake_topup":       enableWaffoPancake,
 		"enable_payos_topup":               enablePayos,
 		"enable_nowpayments_topup":         enableNowpayments,
+		"enable_vietqr_topup":              enableVietQR,
+		"vietqr_min_topup":                 setting.VietQRMinTopUp,
+		"vietqr_bank_id":                   setting.VietQRBankId,
+		"vietqr_account_no":                setting.VietQRAccountNo,
+		"vietqr_infra_fee_ratio":           setting.VietQRInfraFeeRatio,
 		"enable_redemption":                complianceConfirmed,
 		"payment_compliance_confirmed":     complianceConfirmed,
 		"payment_compliance_terms_version": operation_setting.CurrentComplianceTermsVersion,

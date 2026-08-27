@@ -134,13 +134,21 @@ func memoryRateLimiter(c *gin.Context, maxRequestNum int, duration int64, mark s
 
 // writeRateLimited rejects the request with 429 and a Retry-After hint so
 // clients can back off instead of treating the rejection as a fatal error.
-// The in-memory limiter cannot report the remaining window, so callers
-// without a TTL pass the full window duration as a conservative upper bound.
 func writeRateLimited(c *gin.Context, retryAfterSeconds int64) {
 	if retryAfterSeconds > 0 {
 		c.Header("Retry-After", strconv.FormatInt(retryAfterSeconds, 10))
 	}
-	c.Status(http.StatusTooManyRequests)
+	msg := "You are sending requests too quickly. Please try again in a moment."
+	if common.TranslateMessage != nil {
+		if tMsg := common.TranslateMessage(c, "common.rate_limit"); tMsg != "" && tMsg != "common.rate_limit" {
+			msg = tMsg
+		}
+	}
+	c.JSON(http.StatusTooManyRequests, gin.H{
+		"success": false,
+		"code":    "TOO_MANY_REQUESTS",
+		"message": msg,
+	})
 	c.Abort()
 }
 
@@ -187,6 +195,36 @@ func UserCriticalRateLimit(scope string) func(c *gin.Context) {
 		common.CriticalRateLimitDuration,
 		"UC:"+scope,
 	)
+}
+
+// AuthRateLimit: 5 requests / 60 seconds for login/register/reset
+func AuthRateLimit() func(c *gin.Context) {
+	return rateLimitFactory(5, 60, "AUTH")
+}
+
+// PaymentRateLimit: 10 requests / 60 seconds per user for topup/payment requests
+func PaymentRateLimit() func(c *gin.Context) {
+	return userRateLimitFactory(10, 60, "PAY")
+}
+
+// WebhookRateLimit: 30 requests / 60 seconds for webhook endpoints
+func WebhookRateLimit() func(c *gin.Context) {
+	return rateLimitFactory(30, 60, "WH")
+}
+
+// UserGeneralRateLimit: 60 requests / 60 seconds per user for dashboard operations
+func UserGeneralRateLimit() func(c *gin.Context) {
+	return userRateLimitFactory(60, 60, "UG")
+}
+
+// AdminAPIRateLimit: 120 requests / 60 seconds for admin operations
+func AdminAPIRateLimit() func(c *gin.Context) {
+	return userRateLimitFactory(120, 60, "ADM")
+}
+
+// PublicAPIRateLimit: 100 requests / 60 seconds for public read-only endpoints
+func PublicAPIRateLimit() func(c *gin.Context) {
+	return rateLimitFactory(100, 60, "PUB")
 }
 
 func DownloadRateLimit() func(c *gin.Context) {

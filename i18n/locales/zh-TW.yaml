@@ -5,6 +5,7 @@
 common.invalid_params: "無效的參數"
 common.database_error: "資料庫出錯，請聯繫管理員"
 common.retry_later: "請稍後重試"
+common.rate_limit: "請求過於頻繁，請稍後再試。"
 common.generate_failed: "生成失敗"
 common.not_found: "未找到"
 common.unauthorized: "未授權"

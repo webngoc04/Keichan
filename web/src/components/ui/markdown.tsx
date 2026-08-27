@@ -602,8 +602,25 @@ function renderSequenceDiagram(source: string): string {
   `
 }
 
+function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/<[^>]+>/g, '')
+    .replace(/[^\p{L}\p{N}\p{M}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
 const markdownRenderer = new Renderer()
 const renderDefaultCode = markdownRenderer.code.bind(markdownRenderer)
+
+markdownRenderer.heading = function (token: Tokens.Heading): string {
+  const text = this.parser.parseInline(token.tokens)
+  const slug = slugifyHeading(token.text)
+  const idAttr = slug ? ` id="${slug}"` : ''
+  return `<h${token.depth}${idAttr}>${text}</h${token.depth}>\n`
+}
 
 markdownRenderer.code = (token: Tokens.Code): string => {
   const language = token.lang?.toLowerCase()
@@ -727,8 +744,14 @@ function addExternalLinkAttributes(html: string): string {
   template.innerHTML = html
 
   template.content.querySelectorAll('a[href]').forEach((link) => {
-    link.setAttribute('target', '_blank')
-    link.setAttribute('rel', 'noopener noreferrer')
+    const href = link.getAttribute('href')
+    if (href && href.startsWith('#')) {
+      link.removeAttribute('target')
+      link.removeAttribute('rel')
+    } else {
+      link.setAttribute('target', '_blank')
+      link.setAttribute('rel', 'noopener noreferrer')
+    }
   })
 
   return template.innerHTML
@@ -750,8 +773,24 @@ export function Markdown(props: MarkdownProps) {
     [props.breaks, props.children]
   )
 
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = (e.target as HTMLElement).closest('a')
+    if (!target) return
+    const href = target.getAttribute('href')
+    if (href && href.startsWith('#')) {
+      const id = decodeURIComponent(href.slice(1))
+      const element = document.getElementById(id)
+      if (element) {
+        e.preventDefault()
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        window.history.pushState(null, '', href)
+      }
+    }
+  }
+
   return (
     <div
+      onClick={handleContainerClick}
       className={cn(
         'prose prose-sm dark:prose-invert max-w-none',
         '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold',

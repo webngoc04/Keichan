@@ -198,7 +198,7 @@ function AboutMarketing() {
         <section className='grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3'>
           <StatCard value='40+' label='about.stats.providers' />
           <StatCard value='1' label='about.stats.unified' />
-          <StatCard value='99.9%' label='about.stats.uptime' />
+          <StatCard value='24/7' label='about.stats.uptime' />
           <StatCard value='AGPL' label='about.stats.license' />
         </section>
 

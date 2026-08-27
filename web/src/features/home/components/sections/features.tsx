@@ -101,7 +101,7 @@ export function Features(_props: FeaturesProps) {
       icon: <Gauge className='size-5 text-primary' strokeWidth={1.5} />,
       tag: 'THROUGHPUT',
       title: t('High Performance'),
-      desc: t('Optimized Go core delivering microsecond proxy routing latency under high concurrency.'),
+      desc: t('High-throughput core delivering ultra-low proxy routing latency under peak load.'),
     },
     {
       icon: <DollarSign className='size-5 text-primary' strokeWidth={1.5} />,
@@ -119,7 +119,7 @@ export function Features(_props: FeaturesProps) {
       icon: <HeartHandshake className='size-5 text-primary' strokeWidth={1.5} />,
       tag: 'PRIVACY',
       title: t('Self-Hosted & Sovereign'),
-      desc: t('Deploy anywhere in your VPC with SQLite, MySQL or PostgreSQL support.'),
+      desc: t('Deploy anywhere in your infrastructure with full multi-cloud and private VPC support.'),
     },
   ]
 

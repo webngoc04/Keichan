@@ -164,6 +164,16 @@ export interface TopupInfo {
   enable_nowpayments_topup?: boolean
   /** Minimum topup amount for NOWPayments */
   nowpayments_min_topup?: number
+  /** Whether VietQR (MB Bank) topup is enabled */
+  enable_vietqr_topup?: boolean
+  /** Minimum topup amount for VietQR */
+  vietqr_min_topup?: number
+  /** Bank ID for VietQR */
+  vietqr_bank_id?: string
+  /** Bank account number for VietQR */
+  vietqr_account_no?: string
+  /** Infrastructure fee ratio for VietQR */
+  vietqr_infra_fee_ratio?: number
   /** Whether redemption code usage is enabled */
   enable_redemption?: boolean
   /** Whether compliance confirmation has been completed */
@@ -171,6 +181,26 @@ export interface TopupInfo {
   /** Current compliance terms version */
   payment_compliance_terms_version?: string
 }
+
+/**
+ * VietQR topup response
+ */
+export interface VietQRTopUpData {
+  trade_no: string
+  amount_usd: number
+  amount_vnd: number
+  rate: number
+  bank_id: string
+  bank_name: string
+  account_no: string
+  memo: string
+  qr_url: string
+  created_at: number
+  expires_in: number
+}
+
+export type VietQRTopUpResponse = ApiResponse<VietQRTopUpData>
+
 
 /**
  * Preset amount option with optional discount

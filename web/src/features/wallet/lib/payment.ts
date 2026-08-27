@@ -107,12 +107,20 @@ export function isNowpaymentsPayment(paymentType: string): boolean {
   return paymentType === PAYMENT_TYPES.NOWPAYMENTS
 }
 
+/**
+ * Check if payment method is VietQR (MB Bank dynamic QR)
+ */
+export function isVietQRPayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.VIETQR
+}
+
 export interface PaymentProcessors {
   regular: (topupAmount: number, paymentType: string) => Promise<boolean>
   waffo: (topupAmount: number, payMethodIndex: number) => Promise<boolean>
   waffoPancake: (topupAmount: number) => Promise<boolean>
   payos: (topupAmount: number) => Promise<boolean>
   nowpayments: (topupAmount: number) => Promise<boolean>
+  vietqr: (topupAmount: number) => Promise<boolean>
 }
 
 export async function dispatchSelectedPayment(
@@ -140,6 +148,10 @@ export async function dispatchSelectedPayment(
     return processors.nowpayments(topupAmount)
   }
 
+  if (isVietQRPayment(paymentMethod.type)) {
+    return processors.vietqr(topupAmount)
+  }
+
   return processors.regular(topupAmount, paymentMethod.type)
 }
 
@@ -151,21 +163,8 @@ export function getDefaultPaymentType(topupInfo: TopupInfo | null): string {
     return DEFAULT_PAYMENT_TYPE
   }
 
-  // Return first available payment method or default
-  if (topupInfo.pay_methods?.length > 0) {
+  if (topupInfo.pay_methods && topupInfo.pay_methods.length > 0) {
     return topupInfo.pay_methods[0].type
-  }
-
-  if (topupInfo.enable_stripe_topup) {
-    return PAYMENT_TYPES.STRIPE
-  }
-
-  if (topupInfo.enable_waffo_topup) {
-    return PAYMENT_TYPES.WAFFO
-  }
-
-  if (topupInfo.enable_waffo_pancake_topup) {
-    return PAYMENT_TYPES.WAFFO_PANCAKE
   }
 
   return DEFAULT_PAYMENT_TYPE
@@ -201,6 +200,10 @@ export function getMinTopupAmount(topupInfo: TopupInfo | null): number {
 
   if (topupInfo.enable_nowpayments_topup) {
     return topupInfo.nowpayments_min_topup || DEFAULT_MIN_TOPUP
+  }
+
+  if (topupInfo.enable_vietqr_topup) {
+    return topupInfo.vietqr_min_topup || DEFAULT_MIN_TOPUP
   }
 
   return DEFAULT_MIN_TOPUP

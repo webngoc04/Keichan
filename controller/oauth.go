@@ -325,6 +325,30 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 		}
 	}
 
+	// Check if user already exists with matching verified email
+	if oauthUser.Email != "" {
+		normalizedEmail := model.NormalizeEmail(oauthUser.Email)
+		if existingUser, err := model.GetUniqueUserByEmail(normalizedEmail); err == nil && existingUser != nil && existingUser.Id > 0 {
+			if genericProvider, ok := provider.(*oauth.GenericOAuthProvider); ok {
+				binding, bErr := model.GetUserOAuthBinding(existingUser.Id, genericProvider.GetProviderId())
+				if (bErr != nil && errors.Is(bErr, gorm.ErrRecordNotFound)) || binding == nil {
+					_ = model.CreateUserOAuthBinding(&model.UserOAuthBinding{
+						UserId:         existingUser.Id,
+						ProviderId:     genericProvider.GetProviderId(),
+						ProviderUserId: oauthUser.ProviderUserID,
+					})
+				}
+				return existingUser, nil
+			} else {
+				provider.SetProviderUserID(existingUser, oauthUser.ProviderUserID)
+				if err := existingUser.Update(false); err != nil {
+					common.SysError(fmt.Sprintf("[OAuth] Failed to auto-link provider %s to user %d: %s", provider.GetName(), existingUser.Id, err.Error()))
+				}
+				return existingUser, nil
+			}
+		}
+	}
+
 	// User doesn't exist, create new user if registration is enabled
 	if !common.RegisterEnabled {
 		return nil, &OAuthRegistrationDisabledError{}

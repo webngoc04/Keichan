@@ -542,6 +542,8 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.NowpaymentsUnitPrice, _ = strconv.ParseFloat(value, 64)
 	case "NowpaymentsMinTopUp":
 		setting.NowpaymentsMinTopUp, _ = strconv.Atoi(value)
+	case "VietQREnabled", "VietQRBankId", "VietQRAccountNo", "VietQRAccountName", "VietQRMinTopUp", "VietQRInfraFeeRatio", "VietQRTelegramBotToken", "VietQRTelegramAdminId":
+		setting.UpdateVietQROption(key, value)
 	case "TopupGroupRatio":
 		err = common.UpdateTopupGroupRatioByJSONString(value)
 	case "GitHubClientId":

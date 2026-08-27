@@ -29,10 +29,12 @@ import { BillingHistoryDialog } from './components/dialogs/billing-history-dialo
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
+import { VietQRDialog } from './components/vietqr-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
 import { WalletStatsCard } from './components/wallet-stats-card'
 import { DEFAULT_DISCOUNT_RATE, PAYMENT_TYPES } from './constants'
+import { requestVietQRPayment } from './api'
 import {
   useTopupInfo,
   usePayment,
@@ -55,6 +57,7 @@ import type {
   PresetAmount,
   CreemProduct,
   WaffoPayMethod,
+  VietQRTopUpData,
 } from './types'
 
 interface WalletProps {
@@ -113,6 +116,25 @@ export function Wallet(props: WalletProps) {
   const { processing: payosProcessing, processPayosPayment } = usePayosPayment()
   const { processing: nowpaymentsProcessing, processNowpaymentsPayment } =
     useNowpaymentsPayment()
+  const [vietqrDialogOpen, setVietqrDialogOpen] = useState(false)
+  const [vietqrOrder, setVietqrOrder] = useState<VietQRTopUpData | null>(null)
+  const [vietqrProcessing, setVietqrProcessing] = useState(false)
+
+  const processVietQRPayment = async (amount: number) => {
+    try {
+      setVietqrProcessing(true)
+      const res = await requestVietQRPayment(amount)
+      if (res.success && res.data) {
+        setVietqrOrder(res.data)
+        setConfirmDialogOpen(false)
+        setVietqrDialogOpen(true)
+        return true
+      }
+      return false
+    } finally {
+      setVietqrProcessing(false)
+    }
+  }
 
   // Fetch and refresh user data
   const fetchUser = useCallback(async () => {
@@ -209,6 +231,7 @@ export function Wallet(props: WalletProps) {
         waffoPancake: processWaffoPancakePayment,
         payos: processPayosPayment,
         nowpayments: processNowpaymentsPayment,
+        vietqr: processVietQRPayment,
       }
     )
 
@@ -372,7 +395,8 @@ export function Wallet(props: WalletProps) {
           waffoProcessing ||
           pancakeProcessing ||
           payosProcessing ||
-          nowpaymentsProcessing
+          nowpaymentsProcessing ||
+          vietqrProcessing
         }
         discountRate={getDiscountRate()}
         usdExchangeRate={effectiveUsdExchangeRate}
@@ -397,6 +421,13 @@ export function Wallet(props: WalletProps) {
         onConfirm={handleCreemConfirm}
         product={selectedCreemProduct}
         processing={creemProcessing}
+      />
+
+      <VietQRDialog
+        open={vietqrDialogOpen}
+        onOpenChange={setVietqrDialogOpen}
+        order={vietqrOrder}
+        onSuccess={fetchUser}
       />
     </>
   )

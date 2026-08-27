@@ -101,11 +101,15 @@ export function PaymentConfirmDialog({
             ) : (
               <div className='flex items-baseline gap-2'>
                 <span className='text-fluid-h3 font-semibold'>
-                  {formatCurrency(paymentAmount)}
+                  {paymentMethod?.type === 'vietqr'
+                    ? `${new Intl.NumberFormat('vi-VN').format(paymentAmount)} VNĐ`
+                    : formatCurrency(paymentAmount)}
                 </span>
                 {hasDiscount && (
                   <span className='text-muted-foreground text-sm line-through'>
-                    {formatCurrency(originalAmount)}
+                    {paymentMethod?.type === 'vietqr'
+                      ? `${new Intl.NumberFormat('vi-VN').format(originalAmount)} VNĐ`
+                      : formatCurrency(originalAmount)}
                   </span>
                 )}
               </div>
@@ -117,7 +121,9 @@ export function PaymentConfirmDialog({
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>{t('You save')}</span>
                 <span className='font-semibold text-green-600'>
-                  {formatCurrency(discountAmount)}
+                  {paymentMethod?.type === 'vietqr'
+                    ? `${new Intl.NumberFormat('vi-VN').format(discountAmount)} VNĐ`
+                    : formatCurrency(discountAmount)}
                 </span>
               </div>
             </div>
