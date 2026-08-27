@@ -1,0 +1,60 @@
+/*
+Copyright (C) 2023-2026 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import z from 'zod'
+
+import { Models } from '@/features/models'
+import { MODELS_SECTION_IDS } from '@/features/models/section-registry'
+import { ROLE } from '@/lib/roles'
+import { useAuthStore } from '@/stores/auth-store'
+
+const modelsSearchSchema = z.object({
+  page: z.number().optional().catch(1),
+  pageSize: z.number().optional().catch(10),
+  filter: z.string().optional().catch(''),
+  vendor: z.array(z.string()).optional().catch([]),
+  status: z.array(z.string()).optional().catch([]),
+  sync: z.array(z.string()).optional().catch([]),
+  dPage: z.number().optional().catch(1),
+  dPageSize: z.number().optional().catch(10),
+  dFilter: z.string().optional().catch(''),
+  dStatus: z.array(z.string()).optional().catch([]),
+})
+
+export const Route = createFileRoute('/models/$section')({
+  beforeLoad: ({ params, location }) => {
+    const validSections = MODELS_SECTION_IDS as unknown as string[]
+    if (!validSections.includes(params.section)) {
+      throw redirect({
+        to: '/models',
+      })
+    }
+
+    const { auth } = useAuthStore.getState()
+    const role = auth.user?.role ?? 0
+
+    // Only Admin can access /models/metadata and /models/deployments
+    if (!auth.user || !auth.accessToken || role < ROLE.ADMIN) {
+      throw redirect({
+        to: '/sign-in',
+        search: { redirect: location.href },
+      })
+    }
+  },
+  validateSearch: modelsSearchSchema,
+  component: Models,
+})
