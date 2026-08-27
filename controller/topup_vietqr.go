@@ -738,6 +738,34 @@ func getChannelTypeName(channelType int) string {
 	}
 }
 
+func getTopUpVNDAndUSD(topUp *model.TopUp, liveRate float64) (int64, float64) {
+	if topUp == nil {
+		return 0, 0
+	}
+	usd := float64(topUp.Amount)
+	if usd <= 0 {
+		usd = topUp.Money
+	}
+	var vnd int64
+	if topUp.PaymentProvider == model.PaymentProviderVietQR || topUp.PaymentMethod == model.PaymentMethodVietQR {
+		if topUp.Money > 1000 {
+			vnd = int64(math.Round(topUp.Money))
+		} else {
+			if liveRate < 20000 {
+				liveRate = FetchLiveUSDTVNDRate()
+			}
+			vnd = int64(math.Round(usd * liveRate))
+		}
+	} else {
+		// NOWPayments (Crypto), Stripe, Creem, Epay, etc.
+		if liveRate < 20000 {
+			liveRate = FetchLiveUSDTVNDRate()
+		}
+		vnd = int64(math.Round(usd * liveRate))
+	}
+	return vnd, usd
+}
+
 func getAdminReplyKeyboard() map[string]interface{} {
 	return map[string]interface{}{
 		"keyboard": [][]map[string]string{
@@ -954,36 +982,36 @@ func handleTelegramAdminMessage(token string, adminId int64, chatId int64, fromI
 		now := time.Now().In(loc)
 		startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc).Unix()
 		startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, loc).Unix()
+		liveRate := FetchLiveUSDTVNDRate()
 
 		var totalUsers int64
 		model.DB.Model(&model.User{}).Count(&totalUsers)
 
-		var totalSuccessTopups int64
-		model.DB.Model(&model.TopUp{}).Where("status = ?", common.TopUpStatusSuccess).Count(&totalSuccessTopups)
+		var successTopups []model.TopUp
+		model.DB.Where("status = ?", common.TopUpStatusSuccess).Find(&successTopups)
 
 		var pendingTopups int64
 		model.DB.Model(&model.TopUp{}).Where("status = ?", common.TopUpStatusPending).Count(&pendingTopups)
 
-		var totalUSD float64
-		model.DB.Model(&model.TopUp{}).Where("status = ?", common.TopUpStatusSuccess).Select("coalesce(sum(amount), 0)").Scan(&totalUSD)
-
-		var totalVND float64
-		model.DB.Model(&model.TopUp{}).Where("status = ?", common.TopUpStatusSuccess).Select("coalesce(sum(money), 0)").Scan(&totalVND)
-
-		var todayUSD float64
-		model.DB.Model(&model.TopUp{}).Where("status = ? AND create_time >= ?", common.TopUpStatusSuccess, startOfDay).Select("coalesce(sum(amount), 0)").Scan(&todayUSD)
-
-		var todayVND float64
-		model.DB.Model(&model.TopUp{}).Where("status = ? AND create_time >= ?", common.TopUpStatusSuccess, startOfDay).Select("coalesce(sum(money), 0)").Scan(&todayVND)
-
+		var totalUSD, todayUSD, monthUSD float64
+		var totalVND, todayVND, monthVND int64
 		var todayOrders int64
-		model.DB.Model(&model.TopUp{}).Where("status = ? AND create_time >= ?", common.TopUpStatusSuccess, startOfDay).Count(&todayOrders)
 
-		var monthUSD float64
-		model.DB.Model(&model.TopUp{}).Where("status = ? AND create_time >= ?", common.TopUpStatusSuccess, startOfMonth).Select("coalesce(sum(amount), 0)").Scan(&monthUSD)
+		for _, tu := range successTopups {
+			vnd, usd := getTopUpVNDAndUSD(&tu, liveRate)
+			totalUSD += usd
+			totalVND += vnd
 
-		var monthVND float64
-		model.DB.Model(&model.TopUp{}).Where("status = ? AND create_time >= ?", common.TopUpStatusSuccess, startOfMonth).Select("coalesce(sum(money), 0)").Scan(&monthVND)
+			if tu.CreateTime >= startOfDay {
+				todayOrders++
+				todayUSD += usd
+				todayVND += vnd
+			}
+			if tu.CreateTime >= startOfMonth {
+				monthUSD += usd
+				monthVND += vnd
+			}
+		}
 
 		statsMsg := fmt.Sprintf(
 			"📊 <b>BÁO CÁO DOANH THU & NẠP TIỀN</b>\n"+
@@ -1001,16 +1029,16 @@ func handleTelegramAdminMessage(token string, adminId int64, chatId int64, fromI
 			now.Format("15:04:05 02/01/2006"),
 			now.Format("02/01/2006"),
 			todayOrders,
-			formatVND(int64(todayVND)),
+			formatVND(todayVND),
 			todayUSD,
 			now.Month(),
 			now.Year(),
-			formatVND(int64(monthVND)),
+			formatVND(monthVND),
 			monthUSD,
 			totalUsers,
-			totalSuccessTopups,
+			len(successTopups),
 			pendingTopups,
-			formatVND(int64(totalVND)),
+			formatVND(totalVND),
 			totalUSD,
 		)
 		sendTelegramTextMessage(token, chatId, statsMsg, getAdminReplyKeyboard())
@@ -1024,6 +1052,7 @@ func handleTelegramAdminMessage(token string, adminId int64, chatId int64, fromI
 			return
 		}
 
+		liveRate := FetchLiveUSDTVNDRate()
 		loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
 		var sb strings.Builder
 		sb.WriteString("🕒 <b>10 ĐƠN NẠP MỚI NHẤT:</b>\n\n")
@@ -1032,18 +1061,19 @@ func handleTelegramAdminMessage(token string, adminId int64, chatId int64, fromI
 			statusIcon := "⏳"
 			if topUp.Status == common.TopUpStatusSuccess {
 				statusIcon = "✅"
-			} else if topUp.Status == common.TopUpStatusFailed || topUp.Status == "canceled" {
+			} else if topUp.Status == common.TopUpStatusFailed || topUp.Status == "canceled" || topUp.Status == common.TopUpStatusExpired {
 				statusIcon = "❌"
 			}
 
+			vndAmount, usdAmount := getTopUpVNDAndUSD(&topUp, liveRate)
 			tStr := time.Unix(topUp.CreateTime, 0).In(loc).Format("15:04 02/01")
 			sb.WriteString(fmt.Sprintf(
-				"%d. %s <code>%s</code> | <b>%s VNĐ</b> ($%d) | User <code>#%d</code> | %s\n",
+				"%d. %s <code>%s</code> | <b>%s VNĐ</b> ($%.0f) | User <code>#%d</code> | %s\n",
 				i+1,
 				statusIcon,
 				topUp.TradeNo,
-				formatVND(int64(topUp.Money)),
-				topUp.Amount,
+				formatVND(vndAmount),
+				usdAmount,
 				topUp.UserId,
 				tStr,
 			))
@@ -1096,27 +1126,41 @@ func handleTelegramAdminMessage(token string, adminId int64, chatId int64, fromI
 			return
 		}
 
+		liveRate := FetchLiveUSDTVNDRate()
+		vndAmount, usdAmount := getTopUpVNDAndUSD(topUp, liveRate)
 		loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
 		createdStr := time.Unix(topUp.CreateTime, 0).In(loc).Format("15:04:05 02/01/2006")
 		statusText := "⏳ Đang chờ thanh toán (Pending)"
 		if topUp.Status == common.TopUpStatusSuccess {
 			statusText = "✅ Đã thanh toán & duyệt thành công"
-		} else if topUp.Status == common.TopUpStatusFailed {
+		} else if topUp.Status == common.TopUpStatusFailed || topUp.Status == "canceled" {
 			statusText = "❌ Đã hủy / Thất bại"
+		} else if topUp.Status == common.TopUpStatusExpired {
+			statusText = "⌛ Đã hết hạn (Expired > 2 phút)"
+		}
+
+		providerName := topUp.PaymentProvider
+		if providerName == "" {
+			providerName = topUp.PaymentMethod
+		}
+		if providerName == model.PaymentProviderNowpayments {
+			providerName = "NOWPayments (Crypto)"
+		} else if providerName == model.PaymentProviderVietQR {
+			providerName = "VietQR (Ngân hàng)"
 		}
 
 		orderMsg := fmt.Sprintf(
 			"🔍 <b>CHI TIẾT ĐƠN NẠP (#%s)</b>\n\n"+
 				"👤 <b>User ID:</b> <code>%d</code>\n"+
-				"💵 <b>Số tiền nạp:</b> <b>%s VNĐ</b> (~$%d USD)\n"+
+				"💵 <b>Số tiền nạp:</b> <b>%s VNĐ</b> (~$%.2f USD)\n"+
 				"💳 <b>Cổng thanh toán:</b> <code>%s</code>\n"+
 				"⚡ <b>Trạng thái:</b> %s\n"+
 				"⏰ <b>Thời gian tạo:</b> %s",
 			topUp.TradeNo,
 			topUp.UserId,
-			formatVND(int64(topUp.Money)),
-			topUp.Amount,
-			topUp.PaymentMethod,
+			formatVND(vndAmount),
+			usdAmount,
+			providerName,
 			statusText,
 			createdStr,
 		)
