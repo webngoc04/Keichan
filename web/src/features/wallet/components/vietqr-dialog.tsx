@@ -43,32 +43,64 @@ export function VietQRDialog({
     }
   }, [open, order?.trade_no])
 
-  // Real-time polling for order completion
+  // Real-time polling for order completion with visibility change & focus auto-resume
   useEffect(() => {
     if (!open || !order?.trade_no || isSuccess) return
 
+    let isMounted = true
     let closeTimer: ReturnType<typeof setTimeout> | undefined
 
-    const interval = setInterval(async () => {
+    const checkStatus = async () => {
+      if (!isMounted || !order?.trade_no) return
       try {
         const res = await checkVietQRStatus(order.trade_no)
-        if (res.success && res.data?.status === 'success') {
+        if (!isMounted) return
+
+        const status = res.data?.status
+        const isCompleted =
+          res.success &&
+          (status === 'success' ||
+            status === '1' ||
+            (res.data?.complete_time && res.data.complete_time > 0))
+
+        if (isCompleted) {
           setIsSuccess(true)
           toast.success(t('Payment successful! Quota added to your balance.'))
           onSuccess()
-          // Automatically close the bank popup after 1.5 seconds so the user sees confirmation
+          // Automatically close the bank popup after 1.2 seconds so user sees confirmation
           closeTimer = setTimeout(() => {
-            onOpenChange(false)
-          }, 1500)
+            if (isMounted) {
+              onOpenChange(false)
+            }
+          }, 1200)
         }
       } catch {
-        // Ignore polling errors
+        // Ignore polling network errors
       }
-    }, 2500)
+    }
+
+    // 1. Initial check
+    checkStatus()
+
+    // 2. Periodic polling interval
+    const interval = setInterval(checkStatus, 2000)
+
+    // 3. Instant check when user switches back from Banking app (MoMo, MBBank, Vietcombank, etc.)
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        checkStatus()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityOrFocus)
+    window.addEventListener('focus', handleVisibilityOrFocus)
 
     return () => {
+      isMounted = false
       clearInterval(interval)
       if (closeTimer) clearTimeout(closeTimer)
+      document.removeEventListener('visibilitychange', handleVisibilityOrFocus)
+      window.removeEventListener('focus', handleVisibilityOrFocus)
     }
   }, [open, order?.trade_no, isSuccess, onSuccess, onOpenChange, t])
 
