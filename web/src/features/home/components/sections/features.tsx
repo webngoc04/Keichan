@@ -35,57 +35,51 @@ interface FeaturesProps {
   className?: string
 }
 
-type SdkLang = 'python' | 'curl' | 'node'
+type SdkLang = 'cursor' | 'stream' | 'sdk'
 
 const SDK_SNIPPETS: Record<SdkLang, { code: string; label: string }> = {
-  python: {
-    label: 'Python',
-    code: `from openai import OpenAI
-
-# 1-Line Drop-in replacement for OpenAI SDK
-client = OpenAI(
-    base_url="https://api.your-domain.com/v1",
-    api_key="sk-••••••••••••••••"
-)
-
-response = client.chat.completions.create(
-    model="deepseek-r1",  # or gpt-4o, claude-3-5-sonnet
-    messages=[{"role": "user", "content": "Hello!"}],
-    stream=True
-)`,
+  cursor: {
+    label: 'Cursor / Cline',
+    code: `{
+  "api_type": "openai",
+  "base_url": "https://api.yourdomain.com/v1",
+  "api_key": "sk-••••••••••••••••",
+  "models": [
+    "deepseek-r1",
+    "claude-3-5-sonnet",
+    "gemini-2.5-pro",
+    "gpt-4o"
+  ]
+}`,
   },
-  curl: {
-    label: 'cURL',
-    code: `curl -X POST https://api.your-domain.com/v1/chat/completions \\
-  -H "Authorization: Bearer sk-••••••••••••••••" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "deepseek-r1",
-    "messages": [{"role": "user", "content": "Hello!"}],
-    "stream": true
-  }'`,
-  },
-  node: {
-    label: 'Node.js',
-    code: `import OpenAI from 'openai';
+  stream: {
+    label: 'Protocol SSE Stream',
+    code: `POST /v1/chat/completions HTTP/1.1
+Host: api.yourdomain.com
+Authorization: Bearer sk-••••••••••••••••
+Content-Type: application/json
 
-// 1-Line Drop-in replacement for Node.js
-const client = new OpenAI({
-  baseURL: 'https://api.your-domain.com/v1',
-  apiKey: 'sk-••••••••••••••••',
+< HTTP/1.1 200 OK (SSE Stream Active)
+< data: {"id":"cmpl-01","choices":[{"delta":{"content":"Connected."}}]}
+< data: {"id":"cmpl-01","choices":[{"delta":{"content":" Ready."}}]}
+< data: [DONE]`,
+  },
+  sdk: {
+    label: 'Unified AI SDK',
+    code: `import { createOpenAI } from '@ai-sdk/openai';
+
+export const gateway = createOpenAI({
+  baseURL: 'https://api.yourdomain.com/v1',
+  apiKey: process.env.KEICHAN_API_KEY,
 });
 
-const response = await client.chat.completions.create({
-  model: 'deepseek-r1',
-  messages: [{ role: 'user', content: 'Hello!' }],
-  stream: true,
-});`,
+// Single client automatically routes to 50+ AI providers`,
   },
 }
 
 export function Features(_props: FeaturesProps) {
   const { t } = useTranslation()
-  const [selectedLang, setSelectedLang] = useState<SdkLang>('python')
+  const [selectedLang, setSelectedLang] = useState<SdkLang>('cursor')
   const [codeCopied, setCodeCopied] = useState(false)
 
   const handleCopyCode = () => {
@@ -320,7 +314,7 @@ export function Features(_props: FeaturesProps) {
           <div className='rounded-xl border border-border/80 bg-background/90 overflow-hidden font-mono text-xs shadow-inner'>
             <div className='flex items-center justify-between border-b border-border/80 bg-muted/30 px-3 py-2'>
               <div className='flex items-center gap-1.5'>
-                {(['python', 'curl', 'node'] as const).map((lang) => (
+                {(['cursor', 'stream', 'sdk'] as const).map((lang) => (
                   <button
                     type='button'
                     key={lang}
@@ -371,7 +365,7 @@ export function Features(_props: FeaturesProps) {
             {/* Ecosystem Compatibility Row */}
             <div className='border-t border-border/60 bg-muted/20 px-3.5 py-2 flex flex-wrap items-center gap-1.5 text-[10.5px] text-muted-foreground'>
               <span className='text-foreground/70 font-semibold font-mono'>{t('WORKS WITH:')}</span>
-              {['OpenAI SDK', 'LangChain', 'LlamaIndex', 'Vercel AI SDK', 'Cursor', 'Cline'].map((tool) => (
+              {['Cursor', 'Cline', 'Roo Code', 'Open WebUI', 'Dify', 'NextChat', 'Cherry Studio', 'LangChain'].map((tool) => (
                 <span key={tool} className='text-foreground/80 font-mono text-[10px]'>
                   {tool}
                 </span>
