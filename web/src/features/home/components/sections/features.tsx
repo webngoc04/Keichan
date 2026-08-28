@@ -225,7 +225,7 @@ export function Features(_props: FeaturesProps) {
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
               <span className='text-primary font-semibold'>02</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase'>
-                [SECURITY_GOVERNANCE]
+                <ScrambleText text={`[${t('SECURITY')}]`} speed={30} />
               </span>
             </div>
 
@@ -233,12 +233,12 @@ export function Features(_props: FeaturesProps) {
               <div className='flex size-7 items-center justify-center rounded-lg border border-border/80 bg-muted/40'>
                 <Shield className='size-4 text-emerald-400' />
               </div>
-              <h3 className='text-base font-semibold tracking-tight'>
-                {t('Enterprise Security & RBAC')}
+              <h3 className='text-base font-semibold tracking-tight font-mono'>
+                {t('Security & Access Governance')}
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-6'>
+            <p className='text-sm text-muted-foreground leading-relaxed mb-6 font-mono'>
               {t(
                 'Granular permission boundaries, cryptographic token isolation, and real-time usage auditing.'
               )}
@@ -248,10 +248,10 @@ export function Features(_props: FeaturesProps) {
           {/* Real Security Feature Architecture */}
           <div className='space-y-2 font-mono text-xs'>
             {[
-              { tag: 'PERMISSIONS', title: t('Granular Scoped API Keys'), desc: t('Bind specific models, expiry dates & quotas per token') },
-              { tag: 'NETWORKING', title: t('Strict CIDR IP Whitelisting'), desc: t('Enforce access boundaries per user or global system') },
-              { tag: 'BUDGETING', title: t('Hard spending quota limits'), desc: t('Prevent runaway costs with automatic threshold cutoffs') },
-              { tag: 'AUDITING', title: t('Full Request Consumption Logs'), desc: t('Zero-loss tracking of token counts, users & channels') },
+              { tag: t('PERMISSIONS'), title: t('Granular Scoped API Keys'), desc: t('Bind specific models, expiry dates & quotas per token') },
+              { tag: t('NETWORKING'), title: t('Strict CIDR IP Whitelisting'), desc: t('Enforce access boundaries per user or global system') },
+              { tag: t('BUDGETING'), title: t('Hard spending quota limits'), desc: t('Prevent runaway costs with automatic threshold cutoffs') },
+              { tag: t('AUDITING'), title: t('Full Request Consumption Logs'), desc: t('Zero-loss tracking of token counts, users & channels') },
             ].map((item) => (
               <div
                 key={item.tag}
@@ -277,7 +277,7 @@ export function Features(_props: FeaturesProps) {
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
               <span className='text-primary font-semibold'>03</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase'>
-                [RESILIENCE]
+                <ScrambleText text={`[${t('RESILIENCE')}]`} speed={30} />
               </span>
             </div>
 
@@ -285,12 +285,12 @@ export function Features(_props: FeaturesProps) {
               <div className='flex size-7 items-center justify-center rounded-lg border border-border/80 bg-muted/40'>
                 <Globe className='size-4 text-violet-400' />
               </div>
-              <h3 className='text-base font-semibold tracking-tight'>
+              <h3 className='text-base font-semibold tracking-tight font-mono'>
                 {t('Smart Routing & Failover')}
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-6'>
+            <p className='text-sm text-muted-foreground leading-relaxed mb-6 font-mono'>
               {t('Automatic unhealthy node eviction, weighted traffic distribution and zero-downtime retries.')}
             </p>
           </div>
@@ -298,17 +298,17 @@ export function Features(_props: FeaturesProps) {
           {/* Resilience Architecture Flow */}
           <div className='space-y-2 font-mono text-xs'>
             {[
-              { tag: '01 ROUTING', title: t('Weighted Round-Robin'), desc: t('Balance load across multiple accounts & regional endpoints') },
-              { tag: '02 DETECTION', title: t('Passive & Active Health Probing'), desc: t('Evict sluggish or 5xx nodes automatically') },
-              { tag: '03 ISOLATION', title: t('Circuit Breaker Engine'), desc: t('Prevent cascading timeouts when upstreams degrade') },
-              { tag: '04 RETRY', title: t('Zero-Downtime Auto Fallback'), desc: t('Seamlessly switch channels mid-request on error') },
+              { tag: t('ROUTING'), title: t('Weighted Round-Robin'), desc: t('Balance load across multiple accounts & regional endpoints') },
+              { tag: t('DETECTION'), title: t('Passive & Active Health Probing'), desc: t('Evict sluggish or 5xx nodes automatically') },
+              { tag: t('ISOLATION'), title: t('Circuit Breaker Engine'), desc: t('Prevent cascading timeouts when upstreams degrade') },
+              { tag: t('RETRY'), title: t('Zero-Downtime Auto Fallback'), desc: t('Seamlessly switch channels mid-request on error') },
             ].map((step) => (
               <div
                 key={step.tag}
                 className='rounded-xl border border-border/60 bg-muted/20 p-2.5 text-left'
               >
                 <div className='text-[10px] text-violet-400 font-semibold mb-0.5'>
-                  {step.tag}
+                  [{step.tag}]
                 </div>
                 <div className='font-semibold text-foreground/90 text-[11.5px]'>{step.title}</div>
                 <div className='text-[10.5px] text-muted-foreground mt-0.5'>{step.desc}</div>
@@ -327,7 +327,7 @@ export function Features(_props: FeaturesProps) {
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
               <span className='text-primary font-semibold'>04</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase'>
-                [DEVELOPER_FIRST]
+                <ScrambleText text={`[${t('COMPATIBILITY')}]`} speed={30} />
               </span>
             </div>
 
@@ -335,12 +335,12 @@ export function Features(_props: FeaturesProps) {
               <div className='flex size-7 items-center justify-center rounded-lg border border-border/80 bg-muted/40'>
                 <Code className='size-4 text-amber-400' />
               </div>
-              <h3 className='text-base font-semibold tracking-tight'>
+              <h3 className='text-base font-semibold tracking-tight font-mono'>
                 {t('Zero-Code Migration & Compatibility')}
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-5'>
+            <p className='text-sm text-muted-foreground leading-relaxed mb-5 font-mono'>
               {t(
                 'Drop-in replacement for any client, SDK, or autonomous agent tool by changing a single base URL.'
               )}

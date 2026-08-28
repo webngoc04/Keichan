@@ -1,10 +1,10 @@
 {
   "/ {{unit}} tokens": "/ {{unit}} tokens",
-  "about.footer.product": "Keichan",
   "Claude CLI": "Claude CLI",
   "Codex CLI": "Codex CLI",
   "Cursor, Cline, Cherry Studio": "Cursor, Cline, Cherry Studio",
   "Keichan": "Keichan",
   "VietQR (MB Bank)": "VietQR (MB Bank)",
-  "VietQR • NAPAS 247": "VietQR • NAPAS 247"
+  "VietQR • NAPAS 247": "VietQR • NAPAS 247",
+  "about.footer.product": "Keichan"
 }

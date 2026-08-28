@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 /**
@@ -48,7 +48,7 @@ export function EdexAudioSpectrum({ className, bars = 16 }: { className?: string
 }
 
 /**
- * EdexTelemetryBar: Tactical HUD Telemetry strip showing real-time node telemetry
+ * EdexTelemetryBar: Tactical HUD Telemetry strip showing real-time node telemetry (KISS for SaaS)
  */
 export function EdexTelemetryBar({
   latency,
@@ -61,39 +61,7 @@ export function EdexTelemetryBar({
   channelsCount?: string
   className?: string
 }) {
-  const [timeStr, setTimeStr] = useState('')
-
-  useEffect(() => {
-    const updateTime = () => {
-      const d = new Date()
-      try {
-        setTimeStr(
-          d.toLocaleTimeString('en-GB', {
-            timeZone: 'Asia/Ho_Chi_Minh',
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-          })
-        )
-      } catch {
-        // Fallback offset +7 hours
-        const utc = d.getTime() + d.getTimezoneOffset() * 60000
-        const nd = new Date(utc + 3600000 * 7)
-        setTimeStr(
-          nd.toLocaleTimeString('en-GB', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-          })
-        )
-      }
-    }
-    updateTime()
-    const timer = setInterval(updateTime, 1000)
-    return () => clearInterval(timer)
-  }, [])
+  const { t } = useTranslation()
 
   return (
     <div
@@ -105,11 +73,11 @@ export function EdexTelemetryBar({
       <div className='flex items-center gap-3'>
         <div className='flex items-center gap-1.5 text-foreground font-semibold'>
           <span className='pulse-radar-dot size-2 rounded-full bg-emerald-400 inline-block' />
-          <span>[SYS: {nodeName}]</span>
+          <span>[{t('SYS')}: {nodeName}]</span>
         </div>
         <span className='hidden sm:inline-block text-muted-foreground/50'>//</span>
         <span className='hidden sm:inline-block text-cyan-400'>
-          [UPSTREAM: {channelsCount} ADAPTORS]
+          [{t('UPSTREAM')}: {channelsCount} {t('ADAPTORS')}]
         </span>
       </div>
 
@@ -117,10 +85,12 @@ export function EdexTelemetryBar({
         <EdexAudioSpectrum bars={8} className='hidden md:flex' />
         {latency && (
           <span className='rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-emerald-400 font-bold'>
-            RTT: {latency}
+            {t('RTT')}: {latency}
           </span>
         )}
-        <span className='text-foreground/90 font-semibold font-mono'>{timeStr} UTC+7</span>
+        <span className='text-emerald-400 font-semibold font-mono'>
+          [{t('ONLINE')}]
+        </span>
       </div>
     </div>
   )
