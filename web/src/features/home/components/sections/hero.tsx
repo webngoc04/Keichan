@@ -108,19 +108,19 @@ export function Hero(props: HeroProps) {
               <ScrambleText text={t('THE UNIFIED AI GATEWAY')} speed={22} />
             </div>
 
-            <h1 className='text-[clamp(2.25rem,4vw,3.5rem)] font-bold tracking-tight leading-[1.1]'>
+            <h1 className='text-[clamp(2.25rem,4vw,3.5rem)] font-bold tracking-tight leading-[1.1] font-mono'>
               <GlitchText as='span'>
-                {t('Unified API Gateway for')}
+                {t('UNIFIED API GATEWAY')}
               </GlitchText>
               <br />
-              <span className='bg-gradient-to-r from-violet-400 via-primary to-purple-400 bg-clip-text text-transparent matrix-stream-glow'>
-                {t('Vast Range of AI Models')}
+              <span className='bg-gradient-to-r from-cyan-400 via-primary to-violet-400 bg-clip-text text-transparent matrix-stream-glow'>
+                {t('MULTI-PROVIDER PROXY')}
               </span>
             </h1>
 
-            <p className='mt-5 max-w-lg text-sm text-muted-foreground leading-relaxed md:text-base'>
+            <p className='mt-4 max-w-lg text-sm text-muted-foreground leading-relaxed font-mono'>
               {t(
-                'Access a vast selection of models via a standard, unified API protocol. Power AI applications, manage digital assets, and connect the Future.'
+                'High-throughput OpenAI-compatible reverse proxy with dynamic load balancing, real-time token accounting, failover routing, and zero-overhead SSE streaming.'
               )}
             </p>
 

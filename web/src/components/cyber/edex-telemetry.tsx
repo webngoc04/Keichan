@@ -66,14 +66,29 @@ export function EdexTelemetryBar({
   useEffect(() => {
     const updateTime = () => {
       const d = new Date()
-      setTimeStr(
-        d.toLocaleTimeString('en-GB', {
-          hour12: false,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        })
-      )
+      try {
+        setTimeStr(
+          d.toLocaleTimeString('en-GB', {
+            timeZone: 'Asia/Ho_Chi_Minh',
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })
+        )
+      } catch {
+        // Fallback offset +7 hours
+        const utc = d.getTime() + d.getTimezoneOffset() * 60000
+        const nd = new Date(utc + 3600000 * 7)
+        setTimeStr(
+          nd.toLocaleTimeString('en-GB', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })
+        )
+      }
     }
     updateTime()
     const timer = setInterval(updateTime, 1000)
@@ -105,7 +120,52 @@ export function EdexTelemetryBar({
             RTT: {latency}
           </span>
         )}
-        <span className='text-foreground/80 font-semibold'>{timeStr} UTC</span>
+        <span className='text-foreground/90 font-semibold font-mono'>{timeStr} UTC+7</span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * EdexSystemMeter: eDEX-UI tactile resource telemetry meter
+ */
+export function EdexSystemMeter({
+  label,
+  value,
+  max = 100,
+  unit = '%',
+  color = 'cyan',
+  className,
+}: {
+  label: string
+  value: number
+  max?: number
+  unit?: string
+  color?: 'cyan' | 'emerald' | 'violet' | 'amber'
+  className?: string
+}) {
+  const percent = Math.min(100, Math.max(0, (value / max) * 100))
+  const colorMap = {
+    cyan: 'from-cyan-500 to-cyan-400 text-cyan-400 border-cyan-500/30',
+    emerald: 'from-emerald-500 to-emerald-400 text-emerald-400 border-emerald-500/30',
+    violet: 'from-violet-500 to-violet-400 text-violet-400 border-violet-500/30',
+    amber: 'from-amber-500 to-amber-400 text-amber-400 border-amber-500/30',
+  }[color]
+
+  return (
+    <div className={cn('p-2.5 rounded-lg border border-border/80 bg-background/50 font-mono text-xs', className)}>
+      <div className='flex items-center justify-between mb-1.5'>
+        <span className='text-muted-foreground uppercase text-[10px] tracking-wider'>{label}</span>
+        <span className='font-bold text-foreground'>
+          {value}
+          {unit}
+        </span>
+      </div>
+      <div className='h-1.5 w-full bg-muted/40 rounded-full overflow-hidden'>
+        <div
+          className={cn('h-full bg-gradient-to-r transition-all duration-300 rounded-full', colorMap)}
+          style={{ width: `${percent}%` }}
+        />
       </div>
     </div>
   )

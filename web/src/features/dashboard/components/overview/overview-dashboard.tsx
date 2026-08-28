@@ -640,14 +640,14 @@ export function OverviewDashboard() {
                     <div className='flex max-w-2xl flex-col gap-1'>
                       <div className='text-muted-foreground flex items-center gap-2 text-xs font-mono font-medium tracking-wider uppercase'>
                         <span className='pulse-radar-dot size-1.5 rounded-full bg-primary inline-block' />
-                        <ScrambleText text='// 0x01 DEPLOYMENT GUIDE' speed={25} />
+                        <ScrambleText text='// 0x01 INITIALIZATION PROTOCOL' speed={25} />
                       </div>
-                      <h3 className='text-xl font-bold tracking-tight sm:text-2xl'>
-                        <GlitchText as='span'>{t('Build on your API gateway in minutes')}</GlitchText>
+                      <h3 className='text-xl font-bold tracking-tight sm:text-2xl font-mono'>
+                        <GlitchText as='span'>{t('API GATEWAY DISPATCH COCKPIT')}</GlitchText>
                       </h3>
-                      <p className='text-muted-foreground max-w-xl text-sm leading-relaxed'>
+                      <p className='text-muted-foreground max-w-xl text-sm leading-relaxed font-mono'>
                         {t(
-                          'A focused home for keys, balance, routing, and service health.'
+                          'Real-time management for API tokens, quota settlement, routing channels, and health telemetry.'
                         )}
                       </p>
                     </div>

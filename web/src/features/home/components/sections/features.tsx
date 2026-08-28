@@ -128,16 +128,16 @@ export function Features(_props: FeaturesProps) {
   return (
     <section className='relative z-10 px-4 py-20 sm:px-6 md:py-28 max-w-[1220px] mx-auto'>
       {/* Header */}
-      <AnimateInView className='mb-12 max-w-xl'>
-        <div className='mb-3 inline-flex items-center gap-2 font-mono text-xs text-primary font-medium tracking-wider uppercase'>
+      <AnimateInView className='mb-10 max-w-xl'>
+        <div className='mb-2 inline-flex items-center gap-2 font-mono text-xs text-primary font-medium tracking-wider uppercase'>
           <span className='pulse-radar-dot size-1.5 rounded-full bg-primary inline-block' />
-          <ScrambleText text='// 01 ARCHITECTURE' speed={25} />
+          <ScrambleText text='// 01_SYSTEM_TOPOLOGY' speed={25} />
         </div>
-        <h2 className='text-3xl sm:text-4xl font-bold tracking-tight leading-tight'>
-          <GlitchText as='span'>{t('Built for developers,')}</GlitchText>
+        <h2 className='text-2xl sm:text-3xl font-bold tracking-tight leading-tight font-mono'>
+          <GlitchText as='span'>{t('REVERSE PROXY MATRIX')}</GlitchText>
           <br />
-          <span className='bg-gradient-to-r from-violet-400 via-primary to-purple-400 bg-clip-text text-transparent matrix-stream-glow'>
-            {t('designed for scale')}
+          <span className='bg-gradient-to-r from-cyan-400 via-primary to-violet-400 bg-clip-text text-transparent matrix-stream-glow'>
+            {t('DYNAMIC ROUTING INFRASTRUCTURE')}
           </span>
         </h2>
       </AnimateInView>
@@ -154,7 +154,7 @@ export function Features(_props: FeaturesProps) {
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
               <span className='text-primary font-semibold'>01</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase font-mono'>
-                <ScrambleText text='[API_MULTIPLEXER]' speed={30} />
+                <ScrambleText text='[ROUTER_PIPELINE]' speed={30} />
               </span>
             </div>
 
@@ -162,14 +162,14 @@ export function Features(_props: FeaturesProps) {
               <div className='flex size-7 items-center justify-center rounded-lg border border-border/80 bg-muted/40'>
                 <Zap className='size-4 text-primary' />
               </div>
-              <h3 className='text-base font-semibold tracking-tight'>
-                {t('Unified Multi-Protocol Gateway')}
+              <h3 className='text-base font-semibold tracking-tight font-mono'>
+                {t('Unified API Reverse Proxy')}
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-6'>
+            <p className='text-sm text-muted-foreground leading-relaxed mb-6 font-mono'>
               {t(
-                'Standardize 50+ upstream AI providers into a single, high-performance OpenAI-compatible interface with zero protocol translation overhead.'
+                'Standardizes 50+ upstream AI provider channels into a high-concurrency OpenAI-compatible interface with zero protocol translation overhead.'
               )}
             </p>
           </div>
