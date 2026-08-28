@@ -485,6 +485,14 @@ func CheckVietQRStatus(c *gin.Context) {
 	})
 }
 
+type orderTgMsg struct {
+	ChatId    int64
+	MessageId int
+	Username  string
+}
+
+var orderTgMessages sync.Map // map[string]orderTgMsg (key: tradeNo)
+
 // sendTelegramOrderNotification sends message to Admin Telegram
 func sendTelegramOrderNotification(topUp *model.TopUp, username string, usd float64, vnd int64, qrUrl string) {
 	if setting.TelegramBotToken == "" || setting.TelegramAdminId == 0 {
@@ -537,7 +545,27 @@ func sendTelegramOrderNotification(topUp *model.TopUp, username string, usd floa
 
 	payload, _ := common.Marshal(reqBody)
 	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", setting.TelegramBotToken)
-	http.Post(url, "application/json", bytes.NewReader(payload))
+	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
+	if err == nil && resp != nil {
+		defer resp.Body.Close()
+		var res struct {
+			Ok     bool `json:"ok"`
+			Result struct {
+				MessageId int `json:"message_id"`
+				Chat      struct {
+					Id int64 `json:"id"`
+				} `json:"chat"`
+			} `json:"result"`
+		}
+		respBody, _ := io.ReadAll(resp.Body)
+		if err := common.Unmarshal(respBody, &res); err == nil && res.Ok {
+			orderTgMessages.Store(topUp.TradeNo, orderTgMsg{
+				ChatId:    res.Result.Chat.Id,
+				MessageId: res.Result.MessageId,
+				Username:  username,
+			})
+		}
+	}
 }
 
 func formatVND(n int64) string {
@@ -563,17 +591,56 @@ func StartTelegramBotWorker() {
 	telegramPollerStarted = true
 	telegramPollerMu.Unlock()
 
-	// Background worker: Clean hanging pending orders older than 2 minutes (120 seconds)
+	// Background worker: Clean hanging pending orders older than 2 minutes (120 seconds) and notify Telegram of TLE
 	go func() {
 		for {
-			time.Sleep(15 * time.Second)
+			time.Sleep(10 * time.Second)
 			threshold := common.GetTimestamp() - 120
-			model.DB.Model(&model.TopUp{}).
-				Where("status = ? AND create_time < ? AND payment_provider IN (?, ?)",
-					common.TopUpStatusPending, threshold, model.PaymentProviderVietQR, model.PaymentProviderNowpayments).
-				Updates(map[string]interface{}{
-					"status": common.TopUpStatusExpired,
-				})
+
+			var expiredTopups []model.TopUp
+			err := model.DB.Where("status = ? AND create_time < ? AND payment_provider IN (?, ?)",
+				common.TopUpStatusPending, threshold, model.PaymentProviderVietQR, model.PaymentProviderNowpayments).
+				Find(&expiredTopups).Error
+
+			if err == nil && len(expiredTopups) > 0 {
+				loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
+				for _, topUp := range expiredTopups {
+					// 1. Update in Database: set status to expired (từ chối / TLE)
+					_ = model.UpdatePendingTopUpStatus(topUp.TradeNo, topUp.PaymentProvider, common.TopUpStatusExpired)
+
+					// 2. Update Telegram message or send TLE alert to Admin
+					liveRate := FetchLiveUSDTVNDRate()
+					vnd, usd := getTopUpVNDAndUSD(&topUp, liveRate)
+					tStr := time.Now().In(loc).Format("15:04:05 02/01/2006")
+
+					if val, ok := orderTgMessages.LoadAndDelete(topUp.TradeNo); ok {
+						msgInfo := val.(orderTgMsg)
+						editedText := fmt.Sprintf(
+							"⏰ <b>[HẾT HẠN - TLE] ĐƠN NẠP (#%s)</b>\n\n"+
+								"👤 <b>Khách hàng:</b> <code>%s</code> (ID: %d)\n"+
+								"💵 <b>Số tiền:</b> <b>%s VNĐ</b> (~$%.2f USD)\n"+
+								"⚡ <b>Trạng thái:</b> ❌ <b>ĐÃ TỰ ĐỘNG TỪ CHỐI (TLE > 2 phút)</b>\n"+
+								"⏰ <b>Thời gian TLE:</b> %s\n\n"+
+								"<i>(Đơn đã tự động hủy trong hệ thống để tránh treo đơn)</i>",
+							topUp.TradeNo,
+							msgInfo.Username,
+							topUp.UserId,
+							formatVND(vnd),
+							usd,
+							tStr,
+						)
+						editTelegramMessage(setting.TelegramBotToken, msgInfo.ChatId, msgInfo.MessageId, editedText)
+					} else if setting.TelegramBotToken != "" && setting.TelegramAdminId != 0 {
+						alertMsg := fmt.Sprintf(
+							"⏰ <b>[TLE - TỪ CHỐI ĐƠN]</b> Đơn nạp <code>%s</code> (User <code>#%d</code> | <b>%s VNĐ</b>) đã quá 2 phút ➜ Hệ thống đã tự động chuyển sang <b>TỪ CHỐI / HẾT HẠN</b>.",
+							topUp.TradeNo,
+							topUp.UserId,
+							formatVND(vnd),
+						)
+						sendTelegramTextMessage(setting.TelegramBotToken, setting.TelegramAdminId, alertMsg, nil)
+					}
+				}
+			}
 		}
 	}()
 
@@ -674,6 +741,19 @@ func StartTelegramBotWorker() {
 					if action == "approve" {
 						if topUp.Status == common.TopUpStatusSuccess {
 							answerTelegramCallback(token, cb.Id, "ℹ️ Đơn nạp này đã được duyệt trước đó.")
+							continue
+						}
+
+						if topUp.Status == common.TopUpStatusExpired || topUp.Status == common.TopUpStatusFailed {
+							answerTelegramCallback(token, cb.Id, "⚠️ Đơn nạp này đã hết hạn (TLE) / đã bị từ chối trước đó!")
+							editedText := fmt.Sprintf(
+								"⏰ <b>ĐƠN NẠP (#%s) ĐÃ HẾT HẠN (TLE)</b>\n\n"+
+									"👤 <b>User ID:</b> <code>%d</code>\n"+
+									"⚡ <b>Trạng thái:</b> ❌ Đã quá hạn 2 phút và bị từ chối trong hệ thống.",
+								tradeNo,
+								topUp.UserId,
+							)
+							editTelegramMessage(token, cb.Message.Chat.Id, cb.Message.MessageId, editedText)
 							continue
 						}
 
