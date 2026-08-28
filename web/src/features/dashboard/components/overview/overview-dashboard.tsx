@@ -45,6 +45,7 @@ import {
   CardStaggerContainer,
   CardStaggerItem,
 } from '@/components/page-transition'
+import { EdexTelemetryBar } from '@/components/cyber/edex-telemetry'
 import { GlitchText } from '@/components/cyber/glitch-text'
 import { ScrambleText } from '@/components/cyber/scramble-text'
 import { Button } from '@/components/ui/button'
@@ -52,6 +53,7 @@ import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import type { ApiKey } from '@/features/keys/types'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
+import { useRealLatency } from '@/hooks/use-real-latency'
 import { getUserModels } from '@/lib/api'
 import { MOTION_TRANSITION } from '@/lib/motion'
 import { ROLE } from '@/lib/roles'
@@ -460,6 +462,7 @@ function CompactQuickAction(props: { action: QuickAction }) {
 export function OverviewDashboard() {
   const { t } = useTranslation()
   const user = useAuthStore((state) => state.auth.user)
+  const latencyInfo = useRealLatency()
   const { items: apiInfoItems } = useApiInfo()
   const {
     apiInfo: showApiInfoPanel,
@@ -621,6 +624,11 @@ export function OverviewDashboard() {
 
   return (
     <div className='flex flex-col gap-4'>
+      <EdexTelemetryBar
+        latency={latencyInfo.formatted}
+        nodeName='DASHBOARD-NODE'
+        className='rounded-2xl border border-border/80 shadow-xs'
+      />
       {setupGuideExpanded ? (
         <CardStaggerContainer className='grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]'>
           <CardStaggerItem className='bg-card h-full overflow-hidden rounded-2xl border shadow-xs'>

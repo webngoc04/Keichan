@@ -22,6 +22,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CyberBadge } from '@/components/cyber/cyber-badge'
+import { EdexTelemetryBar } from '@/components/cyber/edex-telemetry'
 import { GlitchText } from '@/components/cyber/glitch-text'
 import { ScrambleText } from '@/components/cyber/scramble-text'
 import { Button } from '@/components/ui/button'
@@ -87,29 +88,15 @@ export function Hero(props: HeroProps) {
 
   return (
     <section className='relative z-10 px-4 pt-20 pb-16 sm:px-6 md:pt-28 md:pb-20 lg:pt-32'>
-      {/* Outer CommandCode Structural Frame with Animated Border Beam & HUD Corners */}
+      {/* Outer eDEX-UI Cyber Frame with Animated Border Beam & HUD Corners */}
       <div className='mx-auto max-w-[1220px] rounded-2xl border border-border/80 bg-card/40 backdrop-blur-md shadow-2xl overflow-hidden command-corner border-beam-animated hud-corner relative'>
         
-        {/* Top Ticker / Meta Bar */}
-        <div className='flex items-center justify-between border-b border-border/80 px-4 py-2.5 text-[11px] font-mono text-muted-foreground bg-muted/20 relative z-10'>
-          <div className='flex items-center gap-2'>
-            <span className='pulse-radar-dot relative inline-flex size-2 rounded-full bg-emerald-400' />
-            <span className='font-semibold text-foreground tracking-wide'>
-              <ScrambleText text={t('SYSTEM STATUS: READY')} speed={20} />
-            </span>
-            <span className='hidden sm:inline-block text-muted-foreground/60'>//</span>
-            <span className='hidden sm:inline-block'>{t('50+ UPSTREAM CHANNELS')}</span>
-          </div>
-
-          <div className='hidden md:flex items-center gap-4 text-muted-foreground/80'>
-            <span className='inline-flex items-center gap-1.5'>
-              <span className='size-1.5 rounded-full bg-emerald-400' />
-              <span>[RTT: {latencyInfo.formatted}]</span>
-            </span>
-            <span>[FAILOVER: AUTO]</span>
-            <span className='text-primary font-medium'>[v0.0.0]</span>
-          </div>
-        </div>
+        {/* Top eDEX-UI Telemetry Bar */}
+        <EdexTelemetryBar
+          latency={latencyInfo.formatted}
+          nodeName='KEICHAN-CORE'
+          channelsCount='50+'
+        />
 
         {/* Hero Main Content */}
         <div className='grid grid-cols-1 items-center gap-8 p-6 sm:p-8 lg:grid-cols-12 lg:gap-12 lg:p-12'>
