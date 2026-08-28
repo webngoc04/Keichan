@@ -38,7 +38,7 @@ export function PublicNavigation({ className }: PublicNavigationProps = {}) {
   ]
 
   return (
-    <nav className={cn('hidden items-center gap-1 sm:flex', className)}>
+    <nav className={cn('hidden md:flex items-center gap-0.5 lg:gap-1 shrink-0 whitespace-nowrap', className)}>
       {links.map((link) => {
         const isActive = pathname === link.href
         return (
@@ -46,7 +46,7 @@ export function PublicNavigation({ className }: PublicNavigationProps = {}) {
             key={link.href}
             to={link.href}
             className={cn(
-              'rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-200',
+              'rounded-full px-2 sm:px-2.5 lg:px-3.5 py-1.5 text-[11.5px] lg:text-xs font-medium whitespace-nowrap shrink-0 transition-all duration-200',
               isActive
                 ? 'bg-muted/80 text-foreground font-semibold shadow-xs border border-border/60'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'

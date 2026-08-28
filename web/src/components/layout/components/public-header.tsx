@@ -151,21 +151,21 @@ export function PublicHeader(props: PublicHeaderProps) {
         <div
           className={cn(
             'pointer-events-auto mx-auto transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
-            scrolled ? 'max-w-[52rem] px-3 pt-3' : 'max-w-7xl px-4 pt-0 md:px-6'
+            scrolled ? 'max-w-[58rem] px-3 pt-3' : 'max-w-7xl px-4 pt-0 md:px-6'
           )}
         >
           <nav
             className={cn(
-              'flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
+              'flex items-center justify-between flex-nowrap whitespace-nowrap overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
               scrolled
-                ? 'bg-background/80 ring-border/50 h-12 rounded-2xl pr-1.5 pl-4 shadow-[0_2px_16px_-6px_rgba(0,0,0,0.08),0_0_0_0.5px_rgba(0,0,0,0.02)] ring-[0.5px] backdrop-blur-2xl dark:shadow-[0_2px_16px_-6px_rgba(0,0,0,0.4)]'
+                ? 'bg-background/80 ring-border/50 h-12 rounded-2xl pr-1.5 pl-3.5 shadow-[0_2px_16px_-6px_rgba(0,0,0,0.08),0_0_0_0.5px_rgba(0,0,0,0.02)] ring-[0.5px] backdrop-blur-2xl dark:shadow-[0_2px_16px_-6px_rgba(0,0,0,0.4)]'
                 : 'h-16 px-2'
             )}
           >
             {/* Logo */}
             <Link
               to={homeUrl}
-              className='group flex shrink-0 items-center gap-2.5'
+              className='group flex shrink-0 items-center gap-2'
             >
               <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
                 {(() => {
@@ -185,7 +185,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   )
                 })()}
               </div>
-              <span className='text-sm font-semibold tracking-tight'>
+              <span className='text-sm font-semibold tracking-tight whitespace-nowrap shrink-0'>
                 {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
               </span>
             </Link>
@@ -194,11 +194,11 @@ export function PublicHeader(props: PublicHeaderProps) {
             <PublicNavigation />
 
             {/* Desktop Right Actions */}
-            <div className='hidden items-center gap-1.5 sm:flex'>
+            <div className='hidden items-center gap-1 lg:gap-1.5 md:flex shrink-0 whitespace-nowrap'>
               {(showLanguageSwitcher ||
                 showThemeSwitch ||
                 showNotifications) && (
-                <div className='bg-border/60 mx-1.5 h-3.5 w-px' />
+                <div className='bg-border/60 mx-1 h-3.5 w-px' />
               )}
 
               {showLanguageSwitcher && <LanguageSwitcher />}
@@ -227,17 +227,17 @@ export function PublicHeader(props: PublicHeaderProps) {
                       return <ProfileDropdown />
                     }
                     return (
-                      <div className='flex items-center gap-2'>
+                      <div className='flex items-center gap-1.5 lg:gap-2 shrink-0 whitespace-nowrap'>
                         <Link
                           to='/sign-in'
-                          className='text-muted-foreground hover:text-foreground text-xs font-medium px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors'
+                          className='text-muted-foreground hover:text-foreground text-[11px] lg:text-xs font-medium px-2.5 lg:px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors whitespace-nowrap shrink-0'
                         >
                           {t('Sign in')}
                         </Link>
                         {canRegister && (
                           <Button
                             size='sm'
-                            className='h-8 rounded-full px-4 text-xs font-semibold shadow-xs bg-primary text-primary-foreground hover:opacity-90'
+                            className='h-7 lg:h-8 rounded-full px-3 lg:px-4 text-[11px] lg:text-xs font-semibold shadow-xs bg-primary text-primary-foreground hover:opacity-90 whitespace-nowrap shrink-0'
                             render={<Link to='/sign-up' />}
                           >
                             {t('Sign up')}
@@ -251,7 +251,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             </div>
 
             {/* Mobile: compact actions + hamburger */}
-            <div className='flex items-center gap-2 sm:hidden'>
+            <div className='flex items-center gap-1.5 md:hidden shrink-0'>
               {showThemeSwitch && <ThemeSwitch />}
               {showAuthButtons && !loading && isAuthenticated && (
                 <ProfileDropdown />
