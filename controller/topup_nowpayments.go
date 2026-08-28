@@ -242,15 +242,54 @@ func RequestNowpaymentsPay(c *gin.Context) {
 		return
 	}
 
+	normalizedAmount := normalizeNowpaymentsTopUpAmount(req.Amount)
+	now := time.Now().Unix()
+
+	// 5-second anti-duplicate protection:
+	// If the user submits within 5 seconds for the same amount with an active pending order,
+	// reuse the existing order to prevent duplicate dangling records.
+	var existingTopUp model.TopUp
+	err = model.DB.Where(
+		"user_id = ? AND amount = ? AND payment_provider = ? AND status = ? AND create_time >= ?",
+		id, normalizedAmount, model.PaymentProviderNowpayments, common.TopUpStatusPending, now-5,
+	).Order("id desc").First(&existingTopUp).Error
+
+	origin := nowpaymentsOrigin(c)
+	ipnCallbackUrl := origin + "/api/nowpayments/webhook"
+	successUrl := origin + "/wallet"
+	cancelUrl := origin + "/wallet"
+
+	if err == nil && existingTopUp.TradeNo != "" {
+		invoiceUrl, err := genNowpaymentsInvoice(existingTopUp.TradeNo, existingTopUp.Money, ipnCallbackUrl, successUrl, cancelUrl)
+		if err == nil && invoiceUrl != "" {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "success",
+				"data": gin.H{
+					"checkout_url": invoiceUrl,
+					"order_id":     existingTopUp.TradeNo,
+				},
+			})
+			return
+		}
+	}
+
+	// If more than 5 seconds, auto-expire any previous stale pending orders of this user
+	model.DB.Model(&model.TopUp{}).
+		Where("user_id = ? AND payment_provider = ? AND status = ? AND create_time < ?",
+			id, model.PaymentProviderNowpayments, common.TopUpStatusPending, now-5).
+		Updates(map[string]interface{}{
+			"status": common.TopUpStatusExpired,
+		})
+
 	tradeNo := fmt.Sprintf("NP-%d-%d-%s", id, time.Now().UnixMilli(), randstr.String(6))
 	topUp := &model.TopUp{
 		UserId:          id,
-		Amount:          normalizeNowpaymentsTopUpAmount(req.Amount),
+		Amount:          normalizedAmount,
 		Money:           payMoney,
 		TradeNo:         tradeNo,
 		PaymentMethod:   model.PaymentMethodNowpayments,
 		PaymentProvider: model.PaymentProviderNowpayments,
-		CreateTime:      time.Now().Unix(),
+		CreateTime:      now,
 		Status:          common.TopUpStatusPending,
 	}
 	if err := topUp.Insert(); err != nil {
@@ -258,11 +297,6 @@ func RequestNowpaymentsPay(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
-
-	origin := nowpaymentsOrigin(c)
-	ipnCallbackUrl := origin + "/api/nowpayments/webhook"
-	successUrl := origin + "/wallet"
-	cancelUrl := origin + "/wallet"
 
 	invoiceUrl, err := genNowpaymentsInvoice(tradeNo, payMoney, ipnCallbackUrl, successUrl, cancelUrl)
 	if err != nil {

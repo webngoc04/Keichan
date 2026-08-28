@@ -343,6 +343,59 @@ func RequestVietQRTopUp(c *gin.Context) {
 	}
 
 	amountUSD := float64(req.Amount)
+
+	// 5-second anti-duplicate / debounce protection:
+	// If the user submits within 5 seconds for the same amount with an active pending order,
+	// reuse the existing order to prevent duplicate dangling records & micro rate fluctuations.
+	now := common.GetTimestamp()
+	var existingTopUp model.TopUp
+	err = model.DB.Where(
+		"user_id = ? AND amount = ? AND payment_provider = ? AND status = ? AND create_time >= ?",
+		userId, req.Amount, model.PaymentProviderVietQR, common.TopUpStatusPending, now-5,
+	).Order("id desc").First(&existingTopUp).Error
+
+	if err == nil && existingTopUp.TradeNo != "" {
+		elapsed := now - existingTopUp.CreateTime
+		expiresIn := int64(120) - elapsed
+		if expiresIn < 1 {
+			expiresIn = 1
+		}
+
+		qrUrl := fmt.Sprintf("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s",
+			setting.VietQRBankId,
+			setting.VietQRAccountNo,
+			int64(existingTopUp.Money),
+			existingTopUp.TradeNo,
+		)
+
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"data": gin.H{
+				"trade_no":   existingTopUp.TradeNo,
+				"amount_usd": float64(existingTopUp.Amount),
+				"amount_vnd": int64(existingTopUp.Money),
+				"rate":       math.Round(existingTopUp.Money / float64(existingTopUp.Amount)),
+				"bank_id":    setting.VietQRBankId,
+				"bank_name":  "MBBank (Ngân hàng Quân Đội)",
+				"account_no": setting.VietQRAccountNo,
+				"memo":       existingTopUp.TradeNo,
+				"qr_url":     qrUrl,
+				"created_at": existingTopUp.CreateTime,
+				"expires_in": expiresIn,
+			},
+		})
+		return
+	}
+
+	// If more than 5 seconds, auto-expire any previous stale pending orders of this user to prevent clutter & stale prices
+	model.DB.Model(&model.TopUp{}).
+		Where("user_id = ? AND payment_provider = ? AND status = ? AND create_time < ?",
+			userId, model.PaymentProviderVietQR, common.TopUpStatusPending, now-5).
+		Updates(map[string]interface{}{
+			"status": common.TopUpStatusExpired,
+		})
+
+	// Fetch fresh live exchange rate & calculate new accurate VNĐ price
 	vndAmount, rate := CalculateVietQRMoney(amountUSD)
 
 	// Generate clean order code: KC + 6 random alphanumeric characters
@@ -355,7 +408,7 @@ func RequestVietQRTopUp(c *gin.Context) {
 		TradeNo:         tradeNo,
 		PaymentMethod:   model.PaymentMethodVietQR,
 		PaymentProvider: model.PaymentProviderVietQR,
-		CreateTime:      common.GetTimestamp(),
+		CreateTime:      now,
 		Status:          common.TopUpStatusPending,
 	}
 
