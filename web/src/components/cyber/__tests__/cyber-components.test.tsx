@@ -20,6 +20,7 @@ import { render, screen, act, fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { CyberBadge } from '../cyber-badge'
+import { EdexTelemetryBar } from '../edex-telemetry'
 import { GlitchText } from '../glitch-text'
 import { ScrambleText } from '../scramble-text'
 
@@ -72,6 +73,14 @@ describe('Cyber Components', () => {
       })
 
       expect(container.textContent).toBe('HOVER ME')
+    })
+  })
+
+  describe('EdexTelemetryBar', () => {
+    it('renders node telemetry and latency', () => {
+      render(<EdexTelemetryBar latency='12ms' nodeName='TEST-NODE' channelsCount='40+' />)
+      expect(screen.getByText(/TEST-NODE/)).toBeInTheDocument()
+      expect(screen.getByText(/12ms/)).toBeInTheDocument()
     })
   })
 })
