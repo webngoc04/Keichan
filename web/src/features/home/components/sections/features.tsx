@@ -32,6 +32,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
+import { GlitchText } from '@/components/cyber/glitch-text'
+import { ScrambleText } from '@/components/cyber/scramble-text'
 
 interface FeaturesProps {
   className?: string
@@ -128,12 +130,13 @@ export function Features(_props: FeaturesProps) {
       {/* Header */}
       <AnimateInView className='mb-12 max-w-xl'>
         <div className='mb-3 inline-flex items-center gap-2 font-mono text-xs text-primary font-medium tracking-wider uppercase'>
-          <span>// 01 ARCHITECTURE</span>
+          <span className='pulse-radar-dot size-1.5 rounded-full bg-primary inline-block' />
+          <ScrambleText text='// 01 ARCHITECTURE' speed={25} />
         </div>
         <h2 className='text-3xl sm:text-4xl font-bold tracking-tight leading-tight'>
-          {t('Built for developers,')}
+          <GlitchText as='span'>{t('Built for developers,')}</GlitchText>
           <br />
-          <span className='bg-gradient-to-r from-violet-400 via-primary to-purple-400 bg-clip-text text-transparent'>
+          <span className='bg-gradient-to-r from-violet-400 via-primary to-purple-400 bg-clip-text text-transparent matrix-stream-glow'>
             {t('designed for scale')}
           </span>
         </h2>
@@ -145,13 +148,13 @@ export function Features(_props: FeaturesProps) {
         <AnimateInView
           delay={0}
           animation='fade-up'
-          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hover-tech-card md:col-span-2 flex flex-col justify-between'
+          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hud-corner hover-tech-card md:col-span-2 flex flex-col justify-between'
         >
           <div>
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
               <span className='text-primary font-semibold'>01</span>
-              <span className='text-muted-foreground text-[10px] tracking-wider uppercase'>
-                [API_MULTIPLEXER]
+              <span className='text-muted-foreground text-[10px] tracking-wider uppercase font-mono'>
+                <ScrambleText text='[API_MULTIPLEXER]' speed={30} />
               </span>
             </div>
 

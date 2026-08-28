@@ -45,6 +45,8 @@ import {
   CardStaggerContainer,
   CardStaggerItem,
 } from '@/components/page-transition'
+import { GlitchText } from '@/components/cyber/glitch-text'
+import { ScrambleText } from '@/components/cyber/scramble-text'
 import { Button } from '@/components/ui/button'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
@@ -628,12 +630,12 @@ export function OverviewDashboard() {
                 <div className='flex min-w-0 flex-col gap-5'>
                   <div className='flex flex-wrap items-start justify-between gap-3'>
                     <div className='flex max-w-2xl flex-col gap-1'>
-                      <div className='text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wider uppercase'>
-                        <ListChecks className='size-3.5' aria-hidden='true' />
-                        {t('Get started')}
+                      <div className='text-muted-foreground flex items-center gap-2 text-xs font-mono font-medium tracking-wider uppercase'>
+                        <span className='pulse-radar-dot size-1.5 rounded-full bg-primary inline-block' />
+                        <ScrambleText text='// 0x01 DEPLOYMENT GUIDE' speed={25} />
                       </div>
-                      <h3 className='text-xl font-semibold tracking-tight sm:text-2xl'>
-                        {t('Build on your API gateway in minutes')}
+                      <h3 className='text-xl font-bold tracking-tight sm:text-2xl'>
+                        <GlitchText as='span'>{t('Build on your API gateway in minutes')}</GlitchText>
                       </h3>
                       <p className='text-muted-foreground max-w-xl text-sm leading-relaxed'>
                         {t(

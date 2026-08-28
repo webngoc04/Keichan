@@ -20,6 +20,7 @@ For commercial licensing, please contact support@quantumnous.com
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @import '@fontsource-variable/public-sans';
+@import '@fontsource-variable/jetbrains-mono';
 /* Editorial serif (Lora) backing the `serif` font axis and the Anthropic
  * preset's default typography. See `--font-serif` in theme.css for the
  * full Latin + CJK fallback stack and `theme-presets.css` for the cascade
@@ -975,6 +976,81 @@ For commercial licensing, please contact support@quantumnous.com
   padding: 0.2rem 0.625rem;
   border: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
   background-color: color-mix(in oklch, var(--muted) 40%, transparent);
+}
+
+/* 6. Cyber Glitch Keyframes & Effects */
+@keyframes cyber-glitch-anim {
+  0% {
+    clip-path: inset(40% 0 61% 0);
+    transform: skew(0.3deg);
+  }
+  20% {
+    clip-path: inset(92% 0 1% 0);
+    transform: skew(-0.5deg);
+  }
+  40% {
+    clip-path: inset(10% 0 86% 0);
+    transform: skew(0.8deg);
+  }
+  60% {
+    clip-path: inset(67% 0 24% 0);
+    transform: skew(-0.3deg);
+  }
+  80% {
+    clip-path: inset(25% 0 58% 0);
+    transform: skew(0.5deg);
+  }
+  100% {
+    clip-path: inset(40% 0 61% 0);
+    transform: skew(0deg);
+  }
+}
+
+.cyber-glitch-hover:hover {
+  position: relative;
+  text-shadow: 0.05em 0 0 rgba(255, 0, 80, 0.75),
+              -0.025em -0.05em 0 rgba(0, 255, 255, 0.75),
+              0.025em 0.05em 0 rgba(147, 51, 234, 0.75);
+  animation: cyber-glitch-anim 500ms infinite linear alternate-reverse;
+}
+
+.cyber-glitch-active {
+  position: relative;
+  text-shadow: 0.05em 0 0 rgba(255, 0, 80, 0.75),
+              -0.025em -0.05em 0 rgba(0, 255, 255, 0.75),
+              0.025em 0.05em 0 rgba(147, 51, 234, 0.75);
+  animation: cyber-glitch-anim 600ms infinite linear alternate-reverse;
+}
+
+/* 7. Cyber HUD Corners & Tech Brackets */
+.hud-corner {
+  position: relative;
+}
+.hud-corner::before,
+.hud-corner::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: color-mix(in oklch, var(--primary) 70%, transparent);
+  pointer-events: none;
+}
+.hud-corner::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+.hud-corner::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+/* 8. Matrix Stream Glow */
+.matrix-stream-glow {
+  text-shadow: 0 0 12px color-mix(in oklch, var(--primary) 65%, transparent);
 }
 
 

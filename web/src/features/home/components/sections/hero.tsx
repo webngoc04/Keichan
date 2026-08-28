@@ -17,11 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link } from '@tanstack/react-router'
-import { ArrowRight, BookOpen, Check, Copy, Sparkles, Terminal } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, Copy, Sparkles, Terminal, Activity } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { CyberBadge } from '@/components/cyber/cyber-badge'
+import { GlitchText } from '@/components/cyber/glitch-text'
+import { ScrambleText } from '@/components/cyber/scramble-text'
 import { Button } from '@/components/ui/button'
+import { useRealLatency } from '@/hooks/use-real-latency'
 import { useStatus } from '@/hooks/use-status'
 
 import { HeroTerminalDemo } from '../hero-terminal-demo'
@@ -35,6 +39,7 @@ export function Hero(props: HeroProps) {
   const { t } = useTranslation()
   const { status } = useStatus()
   const [copied, setCopied] = useState(false)
+  const latencyInfo = useRealLatency()
   const docsUrl =
     (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
 
@@ -82,22 +87,25 @@ export function Hero(props: HeroProps) {
 
   return (
     <section className='relative z-10 px-4 pt-20 pb-16 sm:px-6 md:pt-28 md:pb-20 lg:pt-32'>
-      {/* Outer CommandCode Structural Frame with Animated Border Beam */}
-      <div className='mx-auto max-w-[1220px] rounded-2xl border border-border/80 bg-card/40 backdrop-blur-md shadow-2xl overflow-hidden command-corner border-beam-animated relative'>
+      {/* Outer CommandCode Structural Frame with Animated Border Beam & HUD Corners */}
+      <div className='mx-auto max-w-[1220px] rounded-2xl border border-border/80 bg-card/40 backdrop-blur-md shadow-2xl overflow-hidden command-corner border-beam-animated hud-corner relative'>
         
         {/* Top Ticker / Meta Bar */}
         <div className='flex items-center justify-between border-b border-border/80 px-4 py-2.5 text-[11px] font-mono text-muted-foreground bg-muted/20 relative z-10'>
           <div className='flex items-center gap-2'>
             <span className='pulse-radar-dot relative inline-flex size-2 rounded-full bg-emerald-400' />
             <span className='font-semibold text-foreground tracking-wide'>
-              {t('SYSTEM STATUS: READY')}
+              <ScrambleText text={t('SYSTEM STATUS: READY')} speed={20} />
             </span>
             <span className='hidden sm:inline-block text-muted-foreground/60'>//</span>
             <span className='hidden sm:inline-block'>{t('50+ UPSTREAM CHANNELS')}</span>
           </div>
 
           <div className='hidden md:flex items-center gap-4 text-muted-foreground/80'>
-            <span>[LATENCY: &lt;15MS]</span>
+            <span className='inline-flex items-center gap-1.5'>
+              <span className='size-1.5 rounded-full bg-emerald-400' />
+              <span>[RTT: {latencyInfo.formatted}]</span>
+            </span>
             <span>[FAILOVER: AUTO]</span>
             <span className='text-primary font-medium'>[v0.0.0]</span>
           </div>
@@ -110,13 +118,15 @@ export function Hero(props: HeroProps) {
             {/* CommandCode Tag Badge */}
             <div className='mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-[11px] font-mono text-primary'>
               <Sparkles className='size-3 animate-pulse' />
-              <span>{t('THE UNIFIED AI GATEWAY')}</span>
+              <ScrambleText text={t('THE UNIFIED AI GATEWAY')} speed={22} />
             </div>
 
             <h1 className='text-[clamp(2.25rem,4vw,3.5rem)] font-bold tracking-tight leading-[1.1]'>
-              {t('Unified API Gateway for')}
+              <GlitchText as='span'>
+                {t('Unified API Gateway for')}
+              </GlitchText>
               <br />
-              <span className='bg-gradient-to-r from-violet-400 via-primary to-purple-400 bg-clip-text text-transparent'>
+              <span className='bg-gradient-to-r from-violet-400 via-primary to-purple-400 bg-clip-text text-transparent matrix-stream-glow'>
                 {t('Vast Range of AI Models')}
               </span>
             </h1>
