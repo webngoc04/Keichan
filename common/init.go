@@ -133,6 +133,16 @@ func InitEnv() {
 	SearchRateLimitEnable = GetEnvOrDefaultBool("SEARCH_RATE_LIMIT_ENABLE", true)
 	SearchRateLimitNum = GetEnvOrDefault("SEARCH_RATE_LIMIT", 10)
 	SearchRateLimitDuration = int64(GetEnvOrDefault("SEARCH_RATE_LIMIT_DURATION", 60))
+
+	// Initialize Cloudflare Turnstile variables from environment
+	if siteKey := os.Getenv("TURNSTILE_SITE_KEY"); siteKey != "" {
+		TurnstileSiteKey = siteKey
+	}
+	if secretKey := os.Getenv("TURNSTILE_SECRET_KEY"); secretKey != "" {
+		TurnstileSecretKey = secretKey
+	}
+	TurnstileCheckEnabled = GetEnvOrDefaultBool("TURNSTILE_CHECK_ENABLED", TurnstileCheckEnabled || (TurnstileSiteKey != "" && TurnstileSecretKey != ""))
+
 	initConstantEnv()
 }
 
