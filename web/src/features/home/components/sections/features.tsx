@@ -21,10 +21,6 @@ import {
   Shield,
   Globe,
   Code,
-  Gauge,
-  DollarSign,
-  Users,
-  HeartHandshake,
   Check,
   Copy,
 } from 'lucide-react'
@@ -53,7 +49,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="deepseek-r1",  # or gpt-4o, claude-3-5-sonnet, gemini-1.5-pro
+    model="deepseek-r1",  # or gpt-4o, claude-3-5-sonnet
     messages=[{"role": "user", "content": "Hello!"}],
     stream=True
 )`,
@@ -80,7 +76,7 @@ const client = new OpenAI({
 });
 
 const response = await client.chat.completions.create({
-  model: 'gpt-4o',
+  model: 'deepseek-r1',
   messages: [{ role: 'user', content: 'Hello!' }],
   stream: true,
 });`,
@@ -98,37 +94,10 @@ export function Features(_props: FeaturesProps) {
     setTimeout(() => setCodeCopied(false), 2000)
   }
 
-  const additionalFeatures = [
-    {
-      icon: <Gauge className='size-5 text-primary' strokeWidth={1.5} />,
-      tag: 'THROUGHPUT',
-      title: t('High Performance'),
-      desc: t('High-throughput core delivering ultra-low proxy routing latency under peak load.'),
-    },
-    {
-      icon: <DollarSign className='size-5 text-primary' strokeWidth={1.5} />,
-      tag: 'PRICING',
-      title: t('Transparent Billing'),
-      desc: t('Pay-as-you-go per token with non-expiring balance and detailed cost audit logs.'),
-    },
-    {
-      icon: <Users className='size-5 text-primary' strokeWidth={1.5} />,
-      tag: 'GOVERNANCE',
-      title: t('Team Collaboration'),
-      desc: t('Multi-user RBAC, scoped API keys, group permissions and enterprise quota budgets.'),
-    },
-    {
-      icon: <HeartHandshake className='size-5 text-primary' strokeWidth={1.5} />,
-      tag: 'PRIVACY',
-      title: t('Self-Hosted & Sovereign'),
-      desc: t('Deploy anywhere in your infrastructure with full multi-cloud and private VPC support.'),
-    },
-  ]
-
   return (
-    <section className='relative z-10 px-4 py-20 sm:px-6 md:py-28 max-w-[1220px] mx-auto'>
-      {/* Header */}
-      <AnimateInView className='mb-10 max-w-xl'>
+    <section className='relative z-10 px-4 py-16 sm:px-6 md:py-24 max-w-[1280px] mx-auto'>
+      {/* Section Header */}
+      <AnimateInView className='mb-8 max-w-xl'>
         <div className='mb-2 inline-flex items-center gap-2 font-mono text-xs text-primary font-medium tracking-wider uppercase'>
           <span className='pulse-radar-dot size-1.5 rounded-full bg-primary inline-block' />
           <ScrambleText text='// 01_SYSTEM_TOPOLOGY' speed={25} />
@@ -142,17 +111,17 @@ export function Features(_props: FeaturesProps) {
         </h2>
       </AnimateInView>
 
-      {/* Bento Grid */}
-      <div className='grid grid-auto-3 gap-5'>
+      {/* Balanced 2x2 High-Tech Bento Grid */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {/* Card 01: Unified Multi-Protocol Gateway */}
         <AnimateInView
           delay={0}
           animation='fade-up'
-          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hud-corner hover-tech-card md:col-span-2 flex flex-col justify-between'
+          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hud-corner hover-tech-card flex flex-col justify-between'
         >
           <div>
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
-              <span className='text-primary font-semibold'>01</span>
+              <span className='text-primary font-bold'>01</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase font-mono'>
                 <ScrambleText text='[ROUTER_PIPELINE]' speed={30} />
               </span>
@@ -167,16 +136,16 @@ export function Features(_props: FeaturesProps) {
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-6 font-mono'>
+            <p className='text-xs text-muted-foreground leading-relaxed mb-5 font-mono'>
               {t(
                 'Standardizes 50+ upstream AI provider channels into a high-concurrency OpenAI-compatible interface with zero protocol translation overhead.'
               )}
             </p>
           </div>
 
-          {/* Clean Unified Contiguous Endpoints Container */}
+          {/* Unified Contiguous Endpoints Container */}
           <div className='space-y-3 font-mono text-xs'>
-            <div className='rounded-xl border border-border/80 bg-background/40 divide-y divide-border/60 overflow-hidden shadow-xs'>
+            <div className='rounded-xl border border-border/80 bg-background/50 divide-y divide-border/60 overflow-hidden shadow-xs'>
               {[
                 { method: 'POST', path: '/v1/chat/completions', desc: t('Chat & Reasoning (DeepSeek-R1, GPT-4o, Claude 3.5, Gemini)') },
                 { method: 'POST', path: '/v1/embeddings', desc: t('Vector Representation & RAG pipelines') },
@@ -185,15 +154,15 @@ export function Features(_props: FeaturesProps) {
               ].map((ep) => (
                 <div
                   key={ep.path}
-                  className='flex flex-col sm:flex-row sm:items-center justify-between px-3.5 py-2.5 text-xs gap-1.5 sm:gap-4 hover:bg-primary/5 transition-colors'
+                  className='flex flex-col sm:flex-row sm:items-center justify-between px-3 py-2 text-xs gap-1 sm:gap-3 hover:bg-primary/5 transition-colors'
                 >
-                  <div className='flex items-center gap-2.5 shrink-0'>
+                  <div className='flex items-center gap-2 shrink-0'>
                     <span className='rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider bg-primary/15 text-primary border border-primary/20'>
                       {ep.method}
                     </span>
-                    <span className='font-semibold text-foreground tracking-tight'>{ep.path}</span>
+                    <span className='font-semibold text-foreground tracking-tight text-[11.5px]'>{ep.path}</span>
                   </div>
-                  <span className='text-muted-foreground text-[11px] truncate sm:text-right'>
+                  <span className='text-muted-foreground text-[10.5px] truncate sm:text-right'>
                     {ep.desc}
                   </span>
                 </div>
@@ -201,12 +170,12 @@ export function Features(_props: FeaturesProps) {
             </div>
 
             {/* Supported Upstream Ecosystem */}
-            <div className='pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground'>
+            <div className='pt-1 flex flex-wrap items-center gap-1.5 text-[10.5px] text-muted-foreground'>
               <span className='text-foreground/70 font-semibold mr-1 font-mono'>[{t('UPSTREAM')}]:</span>
               {['OpenAI', 'Anthropic Claude', 'Google Gemini', 'DeepSeek', 'AWS Bedrock', 'Azure OpenAI', 'Vertex AI', 'Groq', 'vLLM', 'Ollama'].map((p) => (
                 <span
                   key={p}
-                  className='rounded-md border border-border/60 bg-muted/30 px-2 py-0.5 text-foreground/80 font-mono'
+                  className='rounded-md border border-border/60 bg-muted/30 px-1.5 py-0.5 text-foreground/80 font-mono text-[10px]'
                 >
                   {p}
                 </span>
@@ -219,11 +188,11 @@ export function Features(_props: FeaturesProps) {
         <AnimateInView
           delay={80}
           animation='fade-up'
-          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hover-tech-card md:col-span-1 flex flex-col justify-between'
+          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hud-corner hover-tech-card flex flex-col justify-between'
         >
           <div>
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
-              <span className='text-primary font-semibold'>02</span>
+              <span className='text-primary font-bold'>02</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase'>
                 <ScrambleText text={`[${t('SECURITY')}]`} speed={30} />
               </span>
@@ -238,15 +207,15 @@ export function Features(_props: FeaturesProps) {
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-6 font-mono'>
+            <p className='text-xs text-muted-foreground leading-relaxed mb-5 font-mono'>
               {t(
                 'Granular permission boundaries, cryptographic token isolation, and real-time usage auditing.'
               )}
             </p>
           </div>
 
-          {/* Real Security Feature Architecture */}
-          <div className='rounded-xl border border-border/80 bg-background/40 divide-y divide-border/60 overflow-hidden font-mono text-xs shadow-xs'>
+          {/* Real Security Feature Architecture Contiguous Container */}
+          <div className='rounded-xl border border-border/80 bg-background/50 divide-y divide-border/60 overflow-hidden font-mono text-xs shadow-xs'>
             {[
               { tag: t('PERMISSIONS'), title: t('Granular Scoped API Keys'), desc: t('Bind specific models, expiry dates & quotas per token') },
               { tag: t('NETWORKING'), title: t('Strict CIDR IP Whitelisting'), desc: t('Enforce access boundaries per user or global system') },
@@ -255,7 +224,7 @@ export function Features(_props: FeaturesProps) {
             ].map((item) => (
               <div
                 key={item.tag}
-                className='p-3 text-left hover:bg-emerald-500/5 transition-colors'
+                className='px-3.5 py-2.5 text-left hover:bg-emerald-500/5 transition-colors'
               >
                 <div className='flex items-center justify-between text-[10px] text-muted-foreground mb-0.5'>
                   <span className='text-emerald-400 font-semibold'>[{item.tag}]</span>
@@ -271,11 +240,11 @@ export function Features(_props: FeaturesProps) {
         <AnimateInView
           delay={160}
           animation='fade-up'
-          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hover-tech-card md:col-span-1 flex flex-col justify-between'
+          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hud-corner hover-tech-card flex flex-col justify-between'
         >
           <div>
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
-              <span className='text-primary font-semibold'>03</span>
+              <span className='text-primary font-bold'>03</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase'>
                 <ScrambleText text={`[${t('RESILIENCE')}]`} speed={30} />
               </span>
@@ -290,13 +259,13 @@ export function Features(_props: FeaturesProps) {
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-6 font-mono'>
+            <p className='text-xs text-muted-foreground leading-relaxed mb-5 font-mono'>
               {t('Automatic unhealthy node eviction, weighted traffic distribution and zero-downtime retries.')}
             </p>
           </div>
 
-          {/* Resilience Architecture Flow */}
-          <div className='rounded-xl border border-border/80 bg-background/40 divide-y divide-border/60 overflow-hidden font-mono text-xs shadow-xs'>
+          {/* Resilience Architecture Flow Contiguous Container */}
+          <div className='rounded-xl border border-border/80 bg-background/50 divide-y divide-border/60 overflow-hidden font-mono text-xs shadow-xs'>
             {[
               { tag: t('ROUTING'), title: t('Weighted Round-Robin'), desc: t('Balance load across multiple accounts & regional endpoints') },
               { tag: t('DETECTION'), title: t('Passive & Active Health Probing'), desc: t('Evict sluggish or 5xx nodes automatically') },
@@ -305,7 +274,7 @@ export function Features(_props: FeaturesProps) {
             ].map((step) => (
               <div
                 key={step.tag}
-                className='p-3 text-left hover:bg-violet-500/5 transition-colors'
+                className='px-3.5 py-2.5 text-left hover:bg-violet-500/5 transition-colors'
               >
                 <div className='text-[10px] text-violet-400 font-semibold mb-0.5'>
                   [{step.tag}]
@@ -321,11 +290,11 @@ export function Features(_props: FeaturesProps) {
         <AnimateInView
           delay={240}
           animation='fade-up'
-          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hover-tech-card md:col-span-2 flex flex-col justify-between'
+          className='rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-7 backdrop-blur-xs command-corner hud-corner hover-tech-card flex flex-col justify-between'
         >
           <div>
             <div className='flex items-center justify-between border-b border-border/60 pb-3 mb-4 font-mono text-xs'>
-              <span className='text-primary font-semibold'>04</span>
+              <span className='text-primary font-bold'>04</span>
               <span className='text-muted-foreground text-[10px] tracking-wider uppercase'>
                 <ScrambleText text={`[${t('COMPATIBILITY')}]`} speed={30} />
               </span>
@@ -340,7 +309,7 @@ export function Features(_props: FeaturesProps) {
               </h3>
             </div>
 
-            <p className='text-sm text-muted-foreground leading-relaxed mb-5 font-mono'>
+            <p className='text-xs text-muted-foreground leading-relaxed mb-5 font-mono'>
               {t(
                 'Drop-in replacement for any client, SDK, or autonomous agent tool by changing a single base URL.'
               )}
@@ -369,7 +338,7 @@ export function Features(_props: FeaturesProps) {
 
               <div className='flex items-center gap-2'>
                 <span className='hidden sm:inline-block text-[10px] text-emerald-400 font-semibold'>
-                  ✓ 100% OPENAI COMPATIBLE
+                  ✓ {t('100% OPENAI COMPATIBLE')}
                 </span>
                 <button
                   type='button'
@@ -393,46 +362,23 @@ export function Features(_props: FeaturesProps) {
             </div>
 
             {/* Code Body */}
-            <div className='p-4 text-[11.5px] leading-relaxed overflow-x-auto text-foreground/90 bg-black/40'>
+            <div className='p-3.5 text-[11px] leading-relaxed overflow-x-auto text-foreground/90 bg-black/40'>
               <pre className='whitespace-pre font-mono'>
                 <code>{SDK_SNIPPETS[selectedLang].code}</code>
               </pre>
             </div>
 
             {/* Ecosystem Compatibility Row */}
-            <div className='border-t border-border/60 bg-muted/20 px-3.5 py-2 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground'>
-              <span className='text-foreground/70 font-semibold'>{t('WORKS WITH:')}</span>
-              {['OpenAI SDK', 'LangChain', 'LlamaIndex', 'Vercel AI SDK', 'Cursor', 'Claude Code', 'Cline', 'Dify'].map((tool) => (
-                <span key={tool} className='text-foreground/80'>
+            <div className='border-t border-border/60 bg-muted/20 px-3.5 py-2 flex flex-wrap items-center gap-1.5 text-[10.5px] text-muted-foreground'>
+              <span className='text-foreground/70 font-semibold font-mono'>{t('WORKS WITH:')}</span>
+              {['OpenAI SDK', 'LangChain', 'LlamaIndex', 'Vercel AI SDK', 'Cursor', 'Cline'].map((tool) => (
+                <span key={tool} className='text-foreground/80 font-mono text-[10px]'>
                   {tool}
                 </span>
               ))}
             </div>
           </div>
         </AnimateInView>
-      </div>
-
-      {/* Additional Features Row */}
-      <div className='mt-8 grid grid-auto-4 gap-4'>
-        {additionalFeatures.map((f, i) => (
-          <AnimateInView
-            key={f.title}
-            delay={i * 80}
-            animation='fade-up'
-            className='rounded-2xl border border-border/80 bg-card/40 p-5 backdrop-blur-xs command-corner hover-tech-card'
-          >
-            <div className='flex items-center justify-between mb-3'>
-              <div className='flex size-9 items-center justify-center rounded-xl border border-border/80 bg-muted/30'>
-                {f.icon}
-              </div>
-              <span className='font-mono text-[10px] text-muted-foreground tracking-wider'>[{f.tag}]</span>
-            </div>
-            <h4 className='text-sm font-semibold mb-1.5'>{f.title}</h4>
-            <p className='text-xs text-muted-foreground leading-relaxed'>
-              {f.desc}
-            </p>
-          </AnimateInView>
-        ))}
       </div>
     </section>
   )
