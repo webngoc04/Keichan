@@ -70,70 +70,81 @@ export function VietQRDialog({
     }
   }, [open, order?.trade_no])
 
-  // Real-time polling for order completion with visibility change & focus auto-resume
+  // Real-time Push Notification via Server-Sent Events (SSE) from Backend (No Polling!)
   useEffect(() => {
     if (!open || !order?.trade_no || isSuccess) return
 
     let isMounted = true
+    let eventSource: EventSource | null = null
     let closeTimer: ReturnType<typeof setTimeout> | undefined
 
-    const checkStatus = async () => {
-      if (!isMounted || !order?.trade_no) return
-      try {
-        const res = await checkVietQRStatus(order.trade_no)
-        if (!isMounted) return
+    const handleStatusEvent = (status: string) => {
+      if (!isMounted) return
 
-        const status = res.data?.status
-        if (status === 'expired' || status === 'failed') {
-          toast.error(t('Order expired after 2 minutes. Please create a new order.'))
-          onOpenChange(false)
-          return
+      if (status === 'success' || status === '1') {
+        setIsSuccess(true)
+        toast.success(t('Payment successful! Quota added to your balance.'))
+        onSuccess()
+        closeTimer = setTimeout(() => {
+          if (isMounted) onOpenChange(false)
+        }, 1200)
+      } else if (status === 'expired' || status === 'failed') {
+        toast.error(t('Order expired after 2 minutes. Please create a new order.'))
+        onOpenChange(false)
+      }
+    }
+
+    // 1. Establish real-time SSE stream with Backend
+    try {
+      const sseUrl = `/api/user/payment/events?trade_no=${encodeURIComponent(order.trade_no)}`
+      eventSource = new EventSource(sseUrl, { withCredentials: true })
+
+      eventSource.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data)
+          if (payload.status && payload.status !== 'pending') {
+            handleStatusEvent(payload.status)
+            if (eventSource) eventSource.close()
+          }
+        } catch {
+          // Ignore parse errors
         }
+      }
 
-        const isCompleted =
-          res.success &&
-          (status === 'success' ||
-            status === '1' ||
-            (res.data?.complete_time && res.data.complete_time > 0))
-
-        if (isCompleted) {
-          setIsSuccess(true)
-          toast.success(t('Payment successful! Quota added to your balance.'))
-          onSuccess()
-          // Automatically close the bank popup after 1.2 seconds so user sees confirmation
-          closeTimer = setTimeout(() => {
-            if (isMounted) {
-              onOpenChange(false)
+      eventSource.onerror = () => {
+        // Fallback: If SSE is interrupted, perform a single fallback status check
+        if (isMounted && !isSuccess) {
+          checkVietQRStatus(order.trade_no).then((res) => {
+            if (res.success && res.data?.status) {
+              handleStatusEvent(res.data.status)
             }
-          }, 1200)
+          })
         }
-      } catch {
-        // Ignore polling network errors
+      }
+    } catch {
+      // Ignore SSE init errors
+    }
+
+    // 2. Fallback check when tab regains focus
+    const handleFocus = () => {
+      if (document.visibilityState === 'visible' && isMounted && !isSuccess) {
+        checkVietQRStatus(order.trade_no).then((res) => {
+          if (res.success && res.data?.status) {
+            handleStatusEvent(res.data.status)
+          }
+        })
       }
     }
 
-    // 1. Initial check
-    checkStatus()
-
-    // 2. Periodic polling interval
-    const interval = setInterval(checkStatus, 2000)
-
-    // 3. Instant check when user switches back from Banking app (MoMo, MBBank, Vietcombank, etc.)
-    const handleVisibilityOrFocus = () => {
-      if (document.visibilityState === 'visible') {
-        checkStatus()
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityOrFocus)
-    window.addEventListener('focus', handleVisibilityOrFocus)
+    document.addEventListener('visibilitychange', handleFocus)
+    window.addEventListener('focus', handleFocus)
 
     return () => {
       isMounted = false
-      clearInterval(interval)
+      if (eventSource) eventSource.close()
       if (closeTimer) clearTimeout(closeTimer)
-      document.removeEventListener('visibilitychange', handleVisibilityOrFocus)
-      window.removeEventListener('focus', handleVisibilityOrFocus)
+      document.removeEventListener('visibilitychange', handleFocus)
+      window.removeEventListener('focus', handleFocus)
     }
   }, [open, order?.trade_no, isSuccess, onSuccess, onOpenChange, t])
 

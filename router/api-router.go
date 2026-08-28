@@ -122,6 +122,8 @@ func SetApiRouter(router *gin.Engine) {
 				selfRoute.POST("/vietqr/amount", middleware.PaymentRateLimit(), controller.RequestVietQRAmount)
 				selfRoute.POST("/vietqr/pay", middleware.PaymentRateLimit(), controller.RequestVietQRTopUp)
 				selfRoute.GET("/vietqr/status", middleware.PaymentStatusRateLimit(), controller.CheckVietQRStatus)
+				selfRoute.GET("/vietqr/events", controller.PaymentEventsSSE)
+				selfRoute.GET("/payment/events", controller.PaymentEventsSSE)
 				selfRoute.POST("/aff_transfer", middleware.UserCriticalRateLimit("aff-transfer"), controller.TransferAffQuota)
 				selfRoute.PUT("/setting", controller.UpdateUserSetting)
 

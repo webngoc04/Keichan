@@ -388,6 +388,13 @@ func NowpaymentsWebhook(c *gin.Context) {
 		return
 	}
 
+	BroadcastPaymentEvent(PaymentStatusEvent{
+		TradeNo: tradeNo,
+		Status:  common.TopUpStatusSuccess,
+		Amount:  topUp.Amount,
+		Money:   topUp.Money,
+	})
+
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("NOWPayments 充值成功 trade_no=%s payment_id=%s actually_paid=%s client_ip=%s", tradeNo, payload.PaymentId.String(), payload.ActuallyPaid.String(), c.ClientIP()))
 	c.String(http.StatusOK, "OK")
 }

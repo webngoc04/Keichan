@@ -485,6 +485,135 @@ func CheckVietQRStatus(c *gin.Context) {
 	})
 }
 
+// PaymentStatusEvent represents real-time push event for payment completion or timeout
+type PaymentStatusEvent struct {
+	TradeNo string  `json:"trade_no"`
+	Status  string  `json:"status"` // "success", "expired", "failed"
+	Amount  int64   `json:"amount"`
+	Money   float64 `json:"money"`
+}
+
+var (
+	paymentEventSubscribersMu sync.RWMutex
+	paymentEventSubscribers   = make(map[string][]chan PaymentStatusEvent) // key: tradeNo
+)
+
+func SubscribePaymentEvent(tradeNo string) (chan PaymentStatusEvent, func()) {
+	ch := make(chan PaymentStatusEvent, 5)
+	paymentEventSubscribersMu.Lock()
+	paymentEventSubscribers[tradeNo] = append(paymentEventSubscribers[tradeNo], ch)
+	paymentEventSubscribersMu.Unlock()
+
+	unsubscribe := func() {
+		paymentEventSubscribersMu.Lock()
+		defer paymentEventSubscribersMu.Unlock()
+		subs := paymentEventSubscribers[tradeNo]
+		for i, sub := range subs {
+			if sub == ch {
+				paymentEventSubscribers[tradeNo] = append(subs[:i], subs[i+1:]...)
+				break
+			}
+		}
+		if len(paymentEventSubscribers[tradeNo]) == 0 {
+			delete(paymentEventSubscribers, tradeNo)
+		}
+	}
+	return ch, unsubscribe
+}
+
+func BroadcastPaymentEvent(event PaymentStatusEvent) {
+	paymentEventSubscribersMu.RLock()
+	defer paymentEventSubscribersMu.RUnlock()
+	if subs, ok := paymentEventSubscribers[event.TradeNo]; ok {
+		for _, ch := range subs {
+			select {
+			case ch <- event:
+			default:
+			}
+		}
+	}
+}
+
+// PaymentEventsSSE streams payment status events to the client in real-time via Server-Sent Events (SSE)
+// Eliminates repetitive HTTP polling while providing instant <1ms push confirmation when paid.
+func PaymentEventsSSE(c *gin.Context) {
+	tradeNo := strings.TrimSpace(c.Query("trade_no"))
+	if tradeNo == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Thiếu mã đơn hàng"})
+		return
+	}
+
+	topUp := model.GetTopUpByTradeNo(tradeNo)
+	if topUp == nil {
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "Đơn nạp không tồn tại"})
+		return
+	}
+
+	userId := c.GetInt("id")
+	if topUp.UserId != userId && c.GetString("role") != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"success": false, "message": "Không có quyền truy cập"})
+		return
+	}
+
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Header().Set("X-Accel-Buffering", "no")
+	c.Writer.Flush()
+
+	// 1. If already completed or expired, emit immediate event and exit
+	if topUp.Status == common.TopUpStatusSuccess || topUp.Status == common.TopUpStatusExpired || topUp.Status == common.TopUpStatusFailed {
+		eventData, _ := common.Marshal(PaymentStatusEvent{
+			TradeNo: topUp.TradeNo,
+			Status:  topUp.Status,
+			Amount:  topUp.Amount,
+			Money:   topUp.Money,
+		})
+		fmt.Fprintf(c.Writer, "data: %s\n\n", eventData)
+		c.Writer.Flush()
+		return
+	}
+
+	// 2. Subscribe to real-time events from Backend
+	eventCh, unsubscribe := SubscribePaymentEvent(tradeNo)
+	defer unsubscribe()
+
+	// Send initial connected ping
+	pingData, _ := common.Marshal(map[string]interface{}{
+		"trade_no": tradeNo,
+		"status":   "pending",
+		"ping":     true,
+	})
+	fmt.Fprintf(c.Writer, "data: %s\n\n", pingData)
+	c.Writer.Flush()
+
+	ctx := c.Request.Context()
+	ticker := time.NewTicker(20 * time.Second) // Keep-alive heartbeat
+	defer ticker.Stop()
+
+	timeoutTimer := time.NewTimer(130 * time.Second) // 130s safety timeout
+	defer timeoutTimer.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-timeoutTimer.C:
+			return
+		case <-ticker.C:
+			fmt.Fprintf(c.Writer, ": keepalive\n\n")
+			c.Writer.Flush()
+		case event := <-eventCh:
+			eventData, _ := common.Marshal(event)
+			fmt.Fprintf(c.Writer, "data: %s\n\n", eventData)
+			c.Writer.Flush()
+			if event.Status == common.TopUpStatusSuccess || event.Status == common.TopUpStatusExpired || event.Status == common.TopUpStatusFailed {
+				return
+			}
+		}
+	}
+}
+
 type orderTgMsg struct {
 	ChatId    int64
 	MessageId int
@@ -762,6 +891,13 @@ func StartTelegramBotWorker() {
 							continue
 						}
 
+						BroadcastPaymentEvent(PaymentStatusEvent{
+							TradeNo: tradeNo,
+							Status:  common.TopUpStatusSuccess,
+							Amount:  topUp.Amount,
+							Money:   topUp.Money,
+						})
+
 						answerTelegramCallback(token, cb.Id, "✅ Đã duyệt nạp & cộng Quota thành công!")
 						loc, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
 						timeApproved := time.Now().In(loc).Format("15:04:05 02/01/2006")
@@ -787,6 +923,12 @@ func StartTelegramBotWorker() {
 						}
 
 						_ = model.UpdatePendingTopUpStatus(tradeNo, model.PaymentProviderVietQR, common.TopUpStatusFailed)
+						BroadcastPaymentEvent(PaymentStatusEvent{
+							TradeNo: tradeNo,
+							Status:  common.TopUpStatusFailed,
+							Amount:  topUp.Amount,
+							Money:   topUp.Money,
+						})
 						answerTelegramCallback(token, cb.Id, "❌ Đã hủy đơn nạp.")
 						editedText := fmt.Sprintf("❌ <b>ĐÃ HỦY ĐƠN NẠP (#%s)</b>\nĐơn đã bị từ chối/hủy bởi admin.", tradeNo)
 						editTelegramMessage(token, cb.Message.Chat.Id, cb.Message.MessageId, editedText)
@@ -1658,6 +1800,12 @@ func WebhookVietQR(c *gin.Context) {
 
 			if err := model.RechargeVietQR(candidate, c.ClientIP()); err == nil {
 				logger.LogInfo(context.Background(), "[VietQR-Webhook] Successfully recharged order: "+candidate)
+				BroadcastPaymentEvent(PaymentStatusEvent{
+					TradeNo: candidate,
+					Status:  common.TopUpStatusSuccess,
+					Amount:  topUp.Amount,
+					Money:   topUp.Money,
+				})
 				go sendTelegramAutoApprovedAlert(topUp)
 				c.JSON(http.StatusOK, gin.H{"success": true, "trade_no": candidate})
 				return
