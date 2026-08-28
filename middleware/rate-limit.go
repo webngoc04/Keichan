@@ -217,9 +217,14 @@ func PasswordResetRateLimit() func(c *gin.Context) {
 	return rateLimitFactory(10, 60, "RESET")
 }
 
-// PaymentRateLimit: 10 requests / 60 seconds per user for topup/payment requests
+// PaymentRateLimit: 10 requests / 60 seconds per user for creating topup/payment requests
 func PaymentRateLimit() func(c *gin.Context) {
 	return userRateLimitFactory(10, 60, "PAY")
+}
+
+// PaymentStatusRateLimit: 120 requests / 60 seconds per user for real-time payment status polling
+func PaymentStatusRateLimit() func(c *gin.Context) {
+	return userRateLimitFactory(120, 60, "PSTAT")
 }
 
 // WebhookRateLimit: 30 requests / 60 seconds for webhook endpoints
