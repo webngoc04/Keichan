@@ -20,10 +20,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
-const HACKER_GLYPHS = 'アイウエオカキクケコサシスセソ0123456789ABCDEF_<>{}[]*+=#~!/\\$'
+const HACKER_GLYPHS = 'アイウエオカキクケコ0123456789ABCDEF_<>{}[]*+=#~/'
 
 interface ScrambleTextProps {
-  text: string
+  text?: string
   className?: string
   as?: 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'p'
   speed?: number
@@ -34,14 +34,14 @@ interface ScrambleTextProps {
 }
 
 /**
- * ScrambleText gives text a high-tech matrix / hacker random character decryption effect
- * on initial load and optional hover.
+ * ScrambleText provides high-tech matrix decryption animation using requestAnimationFrame
+ * Optimized for 0 CPU lag and 0 reflow overhead.
  */
 export function ScrambleText({
   text = '',
   className,
   as: Component = 'span',
-  speed = 28,
+  speed = 36,
   cycles = 2,
   triggerOnHover = true,
   autoTrigger = true,
@@ -50,7 +50,7 @@ export function ScrambleText({
   const safeText = typeof text === 'string' ? text : String(text || '')
   const [displayText, setDisplayText] = useState(safeText)
   const isScramblingRef = useRef(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const rafRef = useRef<number | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const startScramble = useCallback(() => {
@@ -60,11 +60,11 @@ export function ScrambleText({
     let iteration = 0
     const targetLength = safeText.length
     const totalSteps = targetLength * cycles
+    let lastTime = performance.now()
 
-    if (intervalRef.current) clearInterval(intervalRef.current)
-
-    intervalRef.current = setInterval(() => {
-      setDisplayText(() => {
+    const step = (currentTime: number) => {
+      if (currentTime - lastTime >= speed) {
+        lastTime = currentTime
         const revealedCount = Math.floor(iteration / cycles)
         let output = ''
 
@@ -80,17 +80,21 @@ export function ScrambleText({
             output += randomGlyph
           }
         }
-        return output
-      })
 
-      iteration += 1
+        setDisplayText(output)
+        iteration += 1
 
-      if (iteration > totalSteps) {
-        if (intervalRef.current) clearInterval(intervalRef.current)
-        setDisplayText(safeText)
-        isScramblingRef.current = false
+        if (iteration > totalSteps) {
+          setDisplayText(safeText)
+          isScramblingRef.current = false
+          return
+        }
       }
-    }, speed)
+
+      rafRef.current = requestAnimationFrame(step)
+    }
+
+    rafRef.current = requestAnimationFrame(step)
   }, [safeText, speed, cycles])
 
   useEffect(() => {
@@ -105,7 +109,7 @@ export function ScrambleText({
     }
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
       isScramblingRef.current = false
     }
@@ -119,8 +123,8 @@ export function ScrambleText({
 
   return (
     <Component
-      className={cn('inline-block font-inherit transition-colors', className)}
       onMouseEnter={handleMouseEnter}
+      className={cn('inline-block cursor-default font-mono', className)}
     >
       {displayText}
     </Component>

@@ -1053,4 +1053,19 @@ For commercial licensing, please contact support@quantumnous.com
   text-shadow: 0 0 12px color-mix(in oklch, var(--primary) 65%, transparent);
 }
 
+/* 9. GPU-Accelerated Audio Equalizer Keyframes (Zero Reflow) */
+@keyframes audio-equalizer-bounce {
+  0% { transform: scaleY(0.15); }
+  25% { transform: scaleY(0.85); }
+  50% { transform: scaleY(0.35); }
+  75% { transform: scaleY(1); }
+  100% { transform: scaleY(0.2); }
+}
+
+.audio-bar-anim {
+  transform-origin: bottom;
+  will-change: transform;
+  animation: audio-equalizer-bounce 0.85s ease-in-out infinite alternate;
+}
+
 

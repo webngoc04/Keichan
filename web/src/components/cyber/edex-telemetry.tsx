@@ -23,26 +23,22 @@ import { cn } from '@/lib/utils'
 
 /**
  * EdexAudioSpectrum: eDEX-UI inspired animated audio-frequency equalizer bars
+ * 100% GPU-accelerated with pure CSS transforms (0 React re-renders, 0 forced reflows)
  */
-export function EdexAudioSpectrum({ className, bars = 16 }: { className?: string; bars?: number }) {
-  const [heights, setHeights] = useState<number[]>(() =>
-    Array.from({ length: bars }, () => Math.floor(Math.random() * 80) + 20)
-  )
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHeights(Array.from({ length: bars }, () => Math.floor(Math.random() * 85) + 15))
-    }, 140)
-    return () => clearInterval(interval)
-  }, [bars])
+export function EdexAudioSpectrum({ className, bars = 8 }: { className?: string; bars?: number }) {
+  const delays = [0.1, 0.4, 0.2, 0.6, 0.3, 0.5, 0.25, 0.7]
+  const durations = [0.75, 0.95, 0.65, 1.05, 0.8, 0.9, 0.7, 0.85]
 
   return (
-    <div className={cn('flex items-end gap-0.5 h-6 px-1 py-0.5', className)} aria-hidden='true'>
-      {heights.map((h, i) => (
+    <div className={cn('flex items-end gap-0.5 h-3.5 px-1 py-0.5', className)} aria-hidden='true'>
+      {Array.from({ length: bars }).map((_, i) => (
         <span
           key={i}
-          className='w-1 bg-gradient-to-t from-primary/40 via-primary to-cyan-400 rounded-t-[1px] transition-all duration-150'
-          style={{ height: `${h}%` }}
+          className='w-1 h-full bg-gradient-to-t from-primary/40 via-primary to-cyan-400 rounded-t-[1px] audio-bar-anim'
+          style={{
+            animationDelay: `-${delays[i % delays.length]}s`,
+            animationDuration: `${durations[i % durations.length]}s`,
+          }}
         />
       ))}
     </div>
