@@ -174,9 +174,9 @@ export function Features(_props: FeaturesProps) {
             </p>
           </div>
 
-          {/* Clean Real Architecture Endpoints List */}
+          {/* Clean Unified Contiguous Endpoints Container */}
           <div className='space-y-3 font-mono text-xs'>
-            <div className='space-y-1.5'>
+            <div className='rounded-xl border border-border/80 bg-background/40 divide-y divide-border/60 overflow-hidden shadow-xs'>
               {[
                 { method: 'POST', path: '/v1/chat/completions', desc: t('Chat & Reasoning (DeepSeek-R1, GPT-4o, Claude 3.5, Gemini)') },
                 { method: 'POST', path: '/v1/embeddings', desc: t('Vector Representation & RAG pipelines') },
@@ -185,15 +185,15 @@ export function Features(_props: FeaturesProps) {
               ].map((ep) => (
                 <div
                   key={ep.path}
-                  className='flex flex-col sm:flex-row sm:items-center justify-between rounded-xl border border-border/60 bg-muted/20 px-3.5 py-2 text-xs gap-1 sm:gap-2'
+                  className='flex flex-col sm:flex-row sm:items-center justify-between px-3.5 py-2.5 text-xs gap-1.5 sm:gap-4 hover:bg-primary/5 transition-colors'
                 >
-                  <div className='flex items-center gap-2'>
-                    <span className='rounded px-1.5 py-0.5 text-[10px] font-bold bg-primary/10 text-primary'>
+                  <div className='flex items-center gap-2.5 shrink-0'>
+                    <span className='rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider bg-primary/15 text-primary border border-primary/20'>
                       {ep.method}
                     </span>
-                    <span className='font-semibold text-foreground/90'>{ep.path}</span>
+                    <span className='font-semibold text-foreground tracking-tight'>{ep.path}</span>
                   </div>
-                  <span className='text-muted-foreground text-[11px] truncate'>
+                  <span className='text-muted-foreground text-[11px] truncate sm:text-right'>
                     {ep.desc}
                   </span>
                 </div>
@@ -201,12 +201,12 @@ export function Features(_props: FeaturesProps) {
             </div>
 
             {/* Supported Upstream Ecosystem */}
-            <div className='pt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground'>
-              <span className='text-foreground/70 font-semibold mr-1'>{t('UPSTREAM')}:</span>
+            <div className='pt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground'>
+              <span className='text-foreground/70 font-semibold mr-1 font-mono'>[{t('UPSTREAM')}]:</span>
               {['OpenAI', 'Anthropic Claude', 'Google Gemini', 'DeepSeek', 'AWS Bedrock', 'Azure OpenAI', 'Vertex AI', 'Groq', 'vLLM', 'Ollama'].map((p) => (
                 <span
                   key={p}
-                  className='rounded-md border border-border/60 bg-muted/30 px-2 py-0.5 text-foreground/80'
+                  className='rounded-md border border-border/60 bg-muted/30 px-2 py-0.5 text-foreground/80 font-mono'
                 >
                   {p}
                 </span>
@@ -246,7 +246,7 @@ export function Features(_props: FeaturesProps) {
           </div>
 
           {/* Real Security Feature Architecture */}
-          <div className='space-y-2 font-mono text-xs'>
+          <div className='rounded-xl border border-border/80 bg-background/40 divide-y divide-border/60 overflow-hidden font-mono text-xs shadow-xs'>
             {[
               { tag: t('PERMISSIONS'), title: t('Granular Scoped API Keys'), desc: t('Bind specific models, expiry dates & quotas per token') },
               { tag: t('NETWORKING'), title: t('Strict CIDR IP Whitelisting'), desc: t('Enforce access boundaries per user or global system') },
@@ -255,12 +255,12 @@ export function Features(_props: FeaturesProps) {
             ].map((item) => (
               <div
                 key={item.tag}
-                className='rounded-xl border border-border/60 bg-muted/20 p-2.5 text-left'
+                className='p-3 text-left hover:bg-emerald-500/5 transition-colors'
               >
                 <div className='flex items-center justify-between text-[10px] text-muted-foreground mb-0.5'>
                   <span className='text-emerald-400 font-semibold'>[{item.tag}]</span>
                 </div>
-                <div className='font-semibold text-foreground/90 text-[11.5px]'>{item.title}</div>
+                <div className='font-semibold text-foreground tracking-tight text-[11.5px]'>{item.title}</div>
                 <div className='text-[10.5px] text-muted-foreground mt-0.5'>{item.desc}</div>
               </div>
             ))}
@@ -296,7 +296,7 @@ export function Features(_props: FeaturesProps) {
           </div>
 
           {/* Resilience Architecture Flow */}
-          <div className='space-y-2 font-mono text-xs'>
+          <div className='rounded-xl border border-border/80 bg-background/40 divide-y divide-border/60 overflow-hidden font-mono text-xs shadow-xs'>
             {[
               { tag: t('ROUTING'), title: t('Weighted Round-Robin'), desc: t('Balance load across multiple accounts & regional endpoints') },
               { tag: t('DETECTION'), title: t('Passive & Active Health Probing'), desc: t('Evict sluggish or 5xx nodes automatically') },
@@ -305,12 +305,12 @@ export function Features(_props: FeaturesProps) {
             ].map((step) => (
               <div
                 key={step.tag}
-                className='rounded-xl border border-border/60 bg-muted/20 p-2.5 text-left'
+                className='p-3 text-left hover:bg-violet-500/5 transition-colors'
               >
                 <div className='text-[10px] text-violet-400 font-semibold mb-0.5'>
                   [{step.tag}]
                 </div>
-                <div className='font-semibold text-foreground/90 text-[11.5px]'>{step.title}</div>
+                <div className='font-semibold text-foreground tracking-tight text-[11.5px]'>{step.title}</div>
                 <div className='text-[10.5px] text-muted-foreground mt-0.5'>{step.desc}</div>
               </div>
             ))}
