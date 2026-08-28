@@ -19,7 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { cn } from '@/lib/utils'
 
 interface GlitchTextProps {
-  children: string
+  children?: React.ReactNode
   className?: string
   as?: 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'p'
   hoverOnly?: boolean
@@ -34,9 +34,10 @@ export function GlitchText({
   as: Component = 'span',
   hoverOnly = true,
 }: GlitchTextProps) {
+  const textContent = typeof children === 'string' ? children : String(children || '')
   return (
     <Component
-      data-text={children}
+      data-text={textContent}
       className={cn(
         'relative inline-block',
         hoverOnly ? 'cyber-glitch-hover' : 'cyber-glitch-active',

@@ -38,7 +38,7 @@ interface ScrambleTextProps {
  * on initial load and optional hover.
  */
 export function ScrambleText({
-  text,
+  text = '',
   className,
   as: Component = 'span',
   speed = 28,
@@ -47,17 +47,18 @@ export function ScrambleText({
   autoTrigger = true,
   delay = 0,
 }: ScrambleTextProps) {
-  const [displayText, setDisplayText] = useState(text)
+  const safeText = typeof text === 'string' ? text : String(text || '')
+  const [displayText, setDisplayText] = useState(safeText)
   const isScramblingRef = useRef(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const startScramble = useCallback(() => {
-    if (isScramblingRef.current) return
+    if (isScramblingRef.current || !safeText) return
     isScramblingRef.current = true
 
     let iteration = 0
-    const targetLength = text.length
+    const targetLength = safeText.length
     const totalSteps = targetLength * cycles
 
     if (intervalRef.current) clearInterval(intervalRef.current)
@@ -68,7 +69,7 @@ export function ScrambleText({
         let output = ''
 
         for (let i = 0; i < targetLength; i++) {
-          const char = text[i]
+          const char = safeText[i]
           if (char === ' ' || char === '\n') {
             output += char
           } else if (i < revealedCount) {
@@ -86,21 +87,21 @@ export function ScrambleText({
 
       if (iteration > totalSteps) {
         if (intervalRef.current) clearInterval(intervalRef.current)
-        setDisplayText(text)
+        setDisplayText(safeText)
         isScramblingRef.current = false
       }
     }, speed)
-  }, [text, speed, cycles])
+  }, [safeText, speed, cycles])
 
   useEffect(() => {
-    if (autoTrigger) {
+    if (autoTrigger && safeText) {
       if (delay > 0) {
         timeoutRef.current = setTimeout(startScramble, delay)
       } else {
         startScramble()
       }
     } else {
-      setDisplayText(text)
+      setDisplayText(safeText)
     }
 
     return () => {
@@ -108,7 +109,7 @@ export function ScrambleText({
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
       isScramblingRef.current = false
     }
-  }, [text, autoTrigger, delay, startScramble])
+  }, [safeText, autoTrigger, delay, startScramble])
 
   const handleMouseEnter = () => {
     if (triggerOnHover && !isScramblingRef.current) {
