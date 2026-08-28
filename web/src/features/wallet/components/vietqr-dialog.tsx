@@ -282,14 +282,11 @@ export function VietQRDialog({
               </div>
             </div>
 
-            {/* Live Polling Status Indicator & 2-Minute Expiration Countdown */}
+            {/* Live SSE Real-Time Status Indicator & 2-Minute Expiration Countdown */}
             <div className='flex items-center justify-between px-1 text-xs text-muted-foreground font-medium'>
               <div className='flex items-center gap-2'>
-                <span className='relative flex size-2'>
-                  <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75'></span>
-                  <span className='relative inline-flex size-2 rounded-full bg-emerald-500'></span>
-                </span>
-                <span>{t('Waiting for transfer...')}</span>
+                <span className='pulse-radar-dot relative inline-flex size-2 rounded-full bg-emerald-400' />
+                <span className='text-[11px] font-mono'>{t('Real-time sync active')}</span>
               </div>
               <span className='font-mono font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full text-[11px]'>
                 ⏳ {formatCountdown(timeLeft)}

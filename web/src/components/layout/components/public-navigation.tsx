@@ -31,7 +31,7 @@ export function PublicNavigation({ className }: PublicNavigationProps = {}) {
 
   const links = [
     { title: t('Home'), href: '/' },
-    { title: t('Models'), href: '/models/' },
+    { title: t('Models'), href: '/models' },
     { title: t('Pricing'), href: '/pricing' },
     { title: t('Docs'), href: '/docs' },
     { title: t('About'), href: '/about' },
@@ -48,8 +48,8 @@ export function PublicNavigation({ className }: PublicNavigationProps = {}) {
             className={cn(
               'rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-200',
               isActive
-                ? 'bg-muted text-foreground font-semibold shadow-xs'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                ? 'bg-muted/80 text-foreground font-semibold shadow-xs border border-border/60'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
             )}
           >
             {link.title}

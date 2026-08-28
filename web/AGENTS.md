@@ -120,13 +120,16 @@
 - **展示**：使用 `toast.error` 等统一方式；路由级错误由 `errorComponent` 承接，提供友好错误页并记录便于排查的信息。
 - **表单**：校验与服务端错误映射到字段后，在字段下方展示；使用 `form.setError` 等与表单库一致的方式。
 
-### 3.10 样式与设计规范 (CommandCode Vibe)
+### 3.10 样式与设计规范 (CommandCode Vibe & Real-Time SSE Architecture)
 
 - **设计规范**：项目整体采用 CommandCode 风格的 Developer-First 暗色硬朗/高信息密度美学（详见根目录 `DESIGN.md`）：
   - **色彩体系**：深邃纯黑底色 (`--background: oklch(0.12 0 0)`)，高对比白色主标题与文字，电光紫 (`oklch(0.65 0.24 285)` / `#8C4EDD`) 作为核心品牌强调色。
   - **结构容器**：主要页面外层采用 `command-frame` 结构线框包装 (`max-w-[1220px] mx-auto rounded-2xl border border-border/80 command-corner`)，顶部配有等宽状态栏/Ticker。
   - **等宽标签**：模块标题上方统一采用等宽技术标签（如 `// 01 ARCHITECTURE`、`[TIER_01 // TRIAL]`、`[v0.0.0]`）。
   - **按钮风格**：主操作采用高对比度圆角胶囊药丸按钮 (`rounded-full px-6 h-10 font-semibold`)，次要操作采用等宽描边按钮。
+- **实时推送架构 (Zero-Polling Rule)**：
+  - 严禁在客户端使用 `setInterval` 循环轮询状态（如支付状态、充值确认、任务队列）。
+  - 必须采用 Server-Sent Events (`EventSource`) 或 WebSocket 服务端实时主动推送事件。前端仅作为被动监听者，收到服务端事件后即时执行 UI 状态流转并自动关闭连接。
 - **Tailwind 实践**：以 Tailwind 工具类为主，动态类名用 `cn()` 合并；非动态场景避免内联样式。
 - 响应式采用移动优先与 Tailwind 断点（`sm:`、`md:`、`lg:` 等）；主题与暗色用 CSS 变量与 `dark:`，自定义样式集中在 `src/styles/`，组件内尽量少写自定义 CSS。
 

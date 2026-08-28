@@ -138,6 +138,18 @@ Do NOT directly import or call `encoding/json` in business code. `json.RawMessag
 - In React components, use `useTranslation()` and call `t('English key')` for user-facing text.
 - Follow `web/AGENTS.md` for detailed frontend conventions, including TypeScript, component structure, styling, accessibility, testing, and build checks.
 
+**Modern GUI Architecture & Design System (Developer-First Aesthetic):**
+- **Visual Aesthetic & Tokens:**
+  - Deep dark obsidian canvas (`oklch(0.12 0 0)`), high-contrast white text, electric violet accent (`oklch(0.65 0.24 285)`), and ultra-crisp hairline borders (`border-border/60`).
+  - Use modern frosted glassmorphic card containers (`.glass-card`, `backdrop-blur-xl bg-card/75 border border-border/80`).
+  - Bento-grid card hierarchy with subtle hover depth, micro-glows, and asymmetric layout balance.
+  - Technical monospace status tags (e.g. `[STATUS: READY]`, `// 01 ARCHITECTURE`, `[LATENCY: <15MS]`).
+- **Real-Time Push Architecture (Zero-Polling Rule):**
+  - Continuous interval HTTP polling (e.g. `setInterval(checkStatus, 2000)`) for payment, top-up, or task status is strictly prohibited.
+  - Real-time client updates MUST use Server-Sent Events (SSE via `/api/user/payment/events?trade_no=...`) or WebSocket push streams.
+  - The client maintains a single passive event stream; the backend immediately broadcasts status updates (`success`, `expired`, `failed`) with sub-millisecond latency.
+  - Timeout and TLE (Time Limit Exceeded - 120s) expiration are handled server-side and pushed to the client, triggering instant dialog dismissal and toast alerts without client-side guessing.
+
 ### Project Governance
 
 **Protected project information:** The following project-related information is strictly protected and MUST NOT be modified, deleted, replaced, or removed under any circumstances:
