@@ -24,6 +24,8 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { GlitchText } from '@/components/cyber/glitch-text'
+import { ScrambleText } from '@/components/cyber/scramble-text'
 import { PublicLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -59,22 +61,22 @@ response = client.chat.completions.create(
 for chunk in response:
     if chunk.choices[0].delta.content:
         print(chunk.choices[0].delta.content, end="")`,
-  javascript: `import OpenAI from "openai";
+  javascript: `import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  baseURL: "https://api.yourdomain.com/v1",
-  apiKey: "YOUR_API_KEY",
+const client = new OpenAI({
+  baseURL: 'https://api.yourdomain.com/v1',
+  apiKey: 'YOUR_API_KEY',
 });
 
 async function main() {
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [{ role: "user", content: "Design a scalable API gateway." }],
+  const stream = await client.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: 'Explain zero-knowledge proofs.' }],
     stream: true,
   });
 
   for await (const chunk of stream) {
-    process.stdout.write(chunk.choices[0]?.delta?.content || "");
+    process.stdout.write(chunk.choices[0]?.delta?.content || '');
   }
 }
 
@@ -99,12 +101,12 @@ export function Docs() {
         <div className='mx-auto mb-12 max-w-3xl text-center'>
           <div className='mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 font-mono text-[11px] text-primary uppercase tracking-wider'>
             <BookOpen className='size-3.5' />
-            <span>// {t('DEVELOPER DOCUMENTATION')}</span>
+            <ScrambleText text={`// ${t('DEVELOPER DOCUMENTATION')}`} speed={25} />
           </div>
-          <h1 className='text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground'>
-            {t('API Reference & Quickstart')}
+          <h1 className='text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground font-mono leading-tight'>
+            <GlitchText as='span'>{t('API Reference & Quickstart')}</GlitchText>
           </h1>
-          <p className='text-muted-foreground mt-4 text-sm sm:text-base leading-relaxed'>
+          <p className='mt-4 max-w-2xl mx-auto text-xs sm:text-sm text-muted-foreground leading-relaxed font-mono'>
             {t(
               '100% OpenAI API compatible. Drop-in replacement for existing applications, libraries, and SDKs.'
             )}
@@ -112,7 +114,7 @@ export function Docs() {
         </div>
 
         {/* Code Showcase Card */}
-        <div className='mb-16 overflow-hidden rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md command-corner shadow-xl'>
+        <div className='mb-14 overflow-hidden rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md command-corner hud-corner shadow-xl'>
           <div className='flex items-center justify-between border-b border-border/80 bg-muted/40 px-4 py-3'>
             <div className='flex items-center gap-2 font-mono text-xs'>
               {(['python', 'javascript', 'curl'] as const).map((lang) => (
@@ -121,9 +123,9 @@ export function Docs() {
                   key={lang}
                   onClick={() => setActiveLang(lang)}
                   className={cn(
-                    'rounded-lg px-3 py-1 text-xs font-medium transition-colors',
+                    'rounded-lg px-3 py-1 text-xs font-medium transition-colors font-mono',
                     activeLang === lang
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   )}
                 >
@@ -151,16 +153,17 @@ export function Docs() {
             </Button>
           </div>
 
-          <pre className='overflow-x-auto p-5 font-mono text-xs sm:text-[13px] leading-relaxed text-foreground/90'>
+          <pre className='overflow-x-auto p-5 font-mono text-xs sm:text-[13px] leading-relaxed text-foreground/90 bg-black/40'>
             <code>{CODE_EXAMPLES[activeLang]}</code>
           </pre>
         </div>
 
         {/* Endpoint Reference Cards */}
-        <div className='space-y-6'>
-          <h2 className='text-xl font-bold text-foreground font-mono'>
-            // {t('Supported Endpoints')}
-          </h2>
+        <div className='space-y-4'>
+          <div className='flex items-center gap-2 font-mono text-sm font-bold text-foreground'>
+            <span className='pulse-radar-dot size-1.5 rounded-full bg-primary inline-block' />
+            <span>// {t('Supported Endpoints')}</span>
+          </div>
 
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             {[
@@ -191,7 +194,7 @@ export function Docs() {
             ].map((ep) => (
               <div
                 key={`${ep.method}-${ep.path}`}
-                className='rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-md command-corner'
+                className='rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-xs command-corner hud-corner hover-tech-card font-mono'
               >
                 <div className='flex items-center gap-2 mb-2 font-mono text-xs'>
                   <span className='rounded bg-emerald-500/10 px-2 py-0.5 font-bold text-emerald-400 border border-emerald-500/20'>
@@ -199,10 +202,10 @@ export function Docs() {
                   </span>
                   <span className='font-bold text-foreground'>{ep.path}</span>
                 </div>
-                <h3 className='text-sm font-semibold text-foreground mb-1'>
+                <h3 className='text-sm font-semibold text-foreground mb-1 tracking-tight font-mono'>
                   {ep.title}
                 </h3>
-                <p className='text-xs text-muted-foreground leading-relaxed'>
+                <p className='text-xs text-muted-foreground leading-relaxed font-mono'>
                   {ep.desc}
                 </p>
               </div>
