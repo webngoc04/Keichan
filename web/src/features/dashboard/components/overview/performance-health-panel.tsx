@@ -92,19 +92,21 @@ export function PerformanceHealthPanel() {
   const hasData = models.length > 0
 
   return (
-    <section className='bg-card h-full overflow-hidden rounded-2xl border shadow-xs'>
-      <div className='flex items-center gap-2 border-b px-4 py-3 sm:px-5'>
+    <section className='glass-card h-full overflow-hidden rounded-2xl border border-border/80 shadow-xs backdrop-blur-xl'>
+      <div className='flex items-center gap-2 border-b border-border/70 bg-muted/10 px-4 py-3 sm:px-5'>
         <IconBadge tone='success' size='sm'>
           <HeartPulse />
         </IconBadge>
-        <h3 className='text-sm font-semibold'>{t('Performance health')}</h3>
-        <span className='text-muted-foreground ml-auto text-xs'>
+        <div className='flex flex-col'>
+          <h3 className='text-sm font-semibold tracking-tight text-foreground'>{t('Performance health')}</h3>
+        </div>
+        <span className='text-muted-foreground ml-auto font-mono text-[11px]'>
           {t('Performance metrics for the last 24 hours')}
         </span>
       </div>
 
-      <div className='space-y-3 p-4 sm:p-5'>
-        <div className='grid grid-auto-3 gap-2'>
+      <div className='space-y-4 p-4 sm:p-5'>
+        <div className='grid grid-auto-3 gap-2.5'>
           <MetricCell
             icon={HeartPulse}
             label={t('Success rate')}
@@ -130,37 +132,37 @@ export function PerformanceHealthPanel() {
         </div>
 
         {loading ? (
-          <div className='space-y-1'>
+          <div className='space-y-1.5'>
             {['success', 'latency', 'throughput'].map((key) => (
-              <Skeleton key={key} className='h-5 w-full rounded' />
+              <Skeleton key={key} className='h-6 w-full rounded-lg' />
             ))}
           </div>
         ) : (
           hasData && (
-            <div>
-              <span className='text-muted-foreground mb-1 block text-[11px] font-medium'>
-                {t('Top models by traffic')}
+            <div className='bg-muted/10 rounded-xl border border-border/60 p-3'>
+              <span className='text-muted-foreground mb-2 block font-mono text-[11px] font-semibold uppercase tracking-wider'>
+                // {t('Top models by traffic')}
               </span>
-              <div className='grid grid-auto-2 gap-x-4'>
+              <div className='grid grid-auto-2 gap-2'>
                 {topModels.map((model) => (
                   <div
                     key={model.model_name}
-                    className='flex items-center justify-between gap-2 rounded px-1.5 py-1'
+                    className='flex items-center justify-between gap-2 rounded-lg bg-background/50 border border-border/40 px-2.5 py-1.5 backdrop-blur-sm'
                   >
-                    <span className='min-w-0 flex-1 truncate font-mono text-[11px]'>
+                    <span className='min-w-0 flex-1 truncate font-mono text-xs font-medium text-foreground'>
                       {model.model_name}
                     </span>
-                    <span className='inline-flex shrink-0 items-center gap-1'>
+                    <span className='inline-flex shrink-0 items-center gap-1.5 bg-muted/30 px-2 py-0.5 rounded-full border border-border/40'>
                       <span
                         className={cn(
-                          'size-1.5 rounded-full',
+                          'size-1.5 rounded-full shadow-[0_0_6px_currentColor]',
                           getSuccessRateDotClass(model.success_rate)
                         )}
                         aria-hidden='true'
                       />
                       <span
                         className={cn(
-                          'font-mono text-[11px] font-semibold tabular-nums',
+                          'font-mono text-xs font-semibold tabular-nums',
                           getSuccessRateTextClass(model.success_rate)
                         )}
                       >
@@ -188,19 +190,19 @@ function MetricCell(props: {
 }) {
   const Icon = props.icon
   return (
-    <div className='bg-muted/40 rounded-xl px-3 py-2.5'>
-      <div className='text-muted-foreground flex items-center gap-1.5 text-[11px] font-medium'>
+    <div className='bg-background/60 rounded-xl border border-border/60 p-3 shadow-xs backdrop-blur-sm'>
+      <div className='text-muted-foreground flex items-center gap-1.5 font-mono text-[11px] font-medium'>
         <IconBadge tone={props.tone} size='xs'>
           <Icon />
         </IconBadge>
         <span className='truncate'>{props.label}</span>
       </div>
       {props.loading ? (
-        <Skeleton className='mt-1.5 h-5 w-16' />
+        <Skeleton className='mt-2 h-5 w-16' />
       ) : (
         <div
           className={cn(
-            'mt-1.5 font-mono text-sm font-semibold tabular-nums',
+            'mt-2 font-mono text-base font-bold tabular-nums text-foreground tracking-tight',
             props.valueClassName
           )}
         >

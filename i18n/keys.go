@@ -219,6 +219,7 @@ const (
 
 // Passkey related messages
 const (
+	MsgPasskeyDisabled      = "passkey.disabled"
 	MsgPasskeyCreateFailed  = "passkey.create_failed"
 	MsgPasskeyLoginAbnormal = "passkey.login_abnormal"
 	MsgPasskeyUpdateFailed  = "passkey.update_failed"

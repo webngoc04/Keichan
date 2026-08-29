@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/i18n"
 	"github.com/QuantumNous/new-api/middleware"
 	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/service"
@@ -50,7 +51,7 @@ func PasskeyRegisterBegin(c *gin.Context) {
 	if !system_setting.GetPasskeySettings().Enabled {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "管理员未启用 Passkey 登录",
+			"message": i18n.T(c, i18n.MsgPasskeyDisabled),
 		})
 		return
 	}
@@ -128,7 +129,7 @@ func PasskeyRegisterFinish(c *gin.Context) {
 	if !system_setting.GetPasskeySettings().Enabled {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "管理员未启用 Passkey 登录",
+			"message": i18n.T(c, i18n.MsgPasskeyDisabled),
 		})
 		return
 	}
@@ -297,7 +298,7 @@ func PasskeyLoginBegin(c *gin.Context) {
 	if !system_setting.GetPasskeySettings().Enabled {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "管理员未启用 Passkey 登录",
+			"message": i18n.T(c, i18n.MsgPasskeyDisabled),
 		})
 		return
 	}
@@ -341,7 +342,7 @@ func PasskeyLoginFinish(c *gin.Context) {
 	if !system_setting.GetPasskeySettings().Enabled {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "管理员未启用 Passkey 登录",
+			"message": i18n.T(c, i18n.MsgPasskeyDisabled),
 		})
 		return
 	}
@@ -488,7 +489,7 @@ func PasskeyVerifyBegin(c *gin.Context) {
 	if !system_setting.GetPasskeySettings().Enabled {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "管理员未启用 Passkey 登录",
+			"message": i18n.T(c, i18n.MsgPasskeyDisabled),
 		})
 		return
 	}
@@ -565,7 +566,7 @@ func PasskeyVerifyFinish(c *gin.Context) {
 	if !system_setting.GetPasskeySettings().Enabled {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "管理员未启用 Passkey 登录",
+			"message": i18n.T(c, i18n.MsgPasskeyDisabled),
 		})
 		return
 	}

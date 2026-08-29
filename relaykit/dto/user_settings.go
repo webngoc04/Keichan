@@ -1,6 +1,7 @@
 package dto
 
 type UserSetting struct {
+	AvatarUrl                        string  `json:"avatar_url,omitempty"`                           // AvatarUrl 用户头像图片地址
 	NotifyType                       string  `json:"notify_type,omitempty"`                          // QuotaWarningType 额度预警类型
 	QuotaWarningThreshold            float64 `json:"quota_warning_threshold,omitempty"`              // QuotaWarningThreshold 额度预警阈值
 	WebhookUrl                       string  `json:"webhook_url,omitempty"`                          // WebhookUrl webhook地址

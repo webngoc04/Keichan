@@ -664,13 +664,13 @@ export function FlowCharts(props: FlowChartsProps) {
         </div>
       </div>
 
-      <div className='overflow-hidden rounded-lg border'>
-        <div className='flex w-full flex-col gap-2 border-b px-3 py-2 sm:px-5 sm:py-3 lg:flex-row lg:items-center lg:justify-between'>
-          <div className='flex min-w-0 items-center gap-2'>
+      <div className='glass-card overflow-hidden rounded-2xl border border-border/80 shadow-xs backdrop-blur-xl'>
+        <div className='flex w-full flex-col gap-2 border-b border-border/70 bg-muted/10 px-4 py-3 sm:px-5 sm:py-3.5 lg:flex-row lg:items-center lg:justify-between'>
+          <div className='flex min-w-0 items-center gap-2.5'>
             <IconBadge tone='info' size='sm'>
               <GitBranch />
             </IconBadge>
-            <div className='text-sm font-semibold'>{chartTitle}</div>
+            <div className='text-sm font-semibold tracking-tight text-foreground'>{chartTitle}</div>
           </div>
           <TooltipProvider>
             <div className='flex min-w-0 items-center gap-1 overflow-x-auto pb-1 lg:justify-end lg:pb-0'>

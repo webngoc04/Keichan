@@ -327,14 +327,14 @@ function AboutMarketing() {
               {t('about.footer.product')}
             </a>{' '}
             © {currentYear} ·{' '}
-            {t('about.footer.basedOn')}{' '}
+            {t('about.footer.forkOf')}{' '}
             <a
               href={NEW_API_REPO}
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('New API')}
+              New API
             </a>{' '}
             (
             <a
@@ -343,7 +343,7 @@ function AboutMarketing() {
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('QuantumNous')}
+              QuantumNous
             </a>
             ) ·{' '}
             {t('about.footer.basedOn')}{' '}
@@ -353,7 +353,7 @@ function AboutMarketing() {
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('One API')}
+              One API
             </a>{' '}
             (
             <a
@@ -362,7 +362,7 @@ function AboutMarketing() {
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('JustSong')}
+              JustSong
             </a>
             )
           </p>

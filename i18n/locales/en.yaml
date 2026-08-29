@@ -188,6 +188,7 @@ checkin.failed: "Check-in failed, please try again later"
 checkin.quota_failed: "Check-in failed: quota update error"
 
 # Passkey messages
+passkey.disabled: "Passkey authentication is not enabled by administrator"
 passkey.create_failed: "Unable to create Passkey credential"
 passkey.login_abnormal: "Passkey login status is abnormal"
 passkey.update_failed: "Passkey credential update failed"

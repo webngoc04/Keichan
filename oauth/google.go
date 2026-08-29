@@ -174,6 +174,7 @@ func (p *GoogleProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*O
 		Username:       username,
 		DisplayName:    gUser.Name,
 		Email:          gUser.Email,
+		AvatarURL:      gUser.Picture,
 	}, nil
 }
 

@@ -374,7 +374,7 @@ function parseExprLiteral(raw: string): string | null {
 
 function tryParseTimeCondition(expr: string): RequestCondition | null {
   let m = expr.match(
-    /^(hour|minute|weekday|month|day)\("([^"]+)"\) >= ([\d.eE+-]+) \|\| \1\("\2"\) < ([\d.eE+-]+)$/
+    /^(hour|minute|weekday|month|day)\("([^"]+)"\) >= ([\d.eE+-]+) (\|\||&&) \1\("\2"\) < ([\d.eE+-]+)$/
   )
   if (m) {
     return {
@@ -384,11 +384,11 @@ function tryParseTimeCondition(expr: string): RequestCondition | null {
       mode: MATCH_RANGE,
       value: '',
       rangeStart: m[3],
-      rangeEnd: m[4],
+      rangeEnd: m[5],
     }
   }
   m = expr.match(
-    /^\((hour|minute|weekday|month|day)\("([^"]+)"\) >= ([\d.eE+-]+) \|\| \1\("\2"\) < ([\d.eE+-]+)\)$/
+    /^\((hour|minute|weekday|month|day)\("([^"]+)"\) >= ([\d.eE+-]+) (\|\||&&) \1\("\2"\) < ([\d.eE+-]+)\)$/
   )
   if (m) {
     return {
@@ -398,7 +398,7 @@ function tryParseTimeCondition(expr: string): RequestCondition | null {
       mode: MATCH_RANGE,
       value: '',
       rangeStart: m[3],
-      rangeEnd: m[4],
+      rangeEnd: m[5],
     }
   }
   m = expr.match(
@@ -641,7 +641,7 @@ export function getRequestRuleMatchOptions(source: string): MatchOption[] {
       { value: MATCH_EQ, labelKey: 'Equals' },
       { value: MATCH_GTE, labelKey: 'Greater than or equal' },
       { value: MATCH_LT, labelKey: 'Less than' },
-      { value: MATCH_RANGE, labelKey: 'Overnight range' },
+      { value: MATCH_RANGE, labelKey: 'Time range' },
     ]
   }
   const base: MatchOption[] = [
@@ -734,6 +734,14 @@ function buildTimeConditionExpr(cond: TimeCondition): string {
     const e = normalized.rangeEnd.trim()
     if (!NUMERIC_LITERAL_REGEX.test(s) || !NUMERIC_LITERAL_REGEX.test(e)) {
       return ''
+    }
+    const numS = Number(s)
+    const numE = Number(e)
+    if (numS === numE) {
+      return `${fn} == ${s}`
+    }
+    if (numS < numE) {
+      return `${fn} >= ${s} && ${fn} < ${e}`
     }
     return `${fn} >= ${s} || ${fn} < ${e}`
   }

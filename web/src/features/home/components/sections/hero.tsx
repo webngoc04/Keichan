@@ -26,7 +26,6 @@ import { EdexTelemetryBar } from '@/components/cyber/edex-telemetry'
 import { GlitchText } from '@/components/cyber/glitch-text'
 import { ScrambleText } from '@/components/cyber/scramble-text'
 import { Button } from '@/components/ui/button'
-import { useRealLatency } from '@/hooks/use-real-latency'
 import { useStatus } from '@/hooks/use-status'
 
 import { HeroTerminalDemo } from '../hero-terminal-demo'
@@ -40,7 +39,6 @@ export function Hero(props: HeroProps) {
   const { t } = useTranslation()
   const { status } = useStatus()
   const [copied, setCopied] = useState(false)
-  const latencyInfo = useRealLatency()
   const docsUrl =
     (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
 
@@ -93,7 +91,7 @@ export function Hero(props: HeroProps) {
         
         {/* Top eDEX-UI Telemetry Bar */}
         <EdexTelemetryBar
-          latency={latencyInfo.formatted}
+          latency='<15ms'
           nodeName='KEICHAN-CORE'
           channelsCount='50+'
         />

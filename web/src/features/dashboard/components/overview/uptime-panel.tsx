@@ -33,16 +33,16 @@ import { cn } from '@/lib/utils'
 import { PanelWrapper } from '../ui/panel-wrapper'
 
 const STATUS_COLOR_MAP: Record<number, string> = {
-  1: 'bg-emerald-500',
-  0: 'bg-red-500',
-  2: 'bg-amber-500',
-  3: 'bg-blue-500',
+  1: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]',
+  0: 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.7)]',
+  2: 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.7)]',
+  3: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.7)]',
 }
 const DEFAULT_STATUS_COLOR = 'bg-muted-foreground/40'
 
 const StatusDot = memo(function StatusDot(props: { status: number }) {
   const color = STATUS_COLOR_MAP[props.status] ?? DEFAULT_STATUS_COLOR
-  return <span className={cn('inline-block size-2 rounded-full', color)} />
+  return <span className={cn('inline-block size-2 shrink-0 rounded-full', color)} />
 })
 
 export function UptimePanel() {

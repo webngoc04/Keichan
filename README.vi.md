@@ -190,26 +190,27 @@ docker run --name new-api -d --restart always \
 
 | Tính năng | Mô tả |
 |------|------|
-| 🎨 Giao diện Hiện đại | Thiết kế UI hoàn toàn mới, tối ưu hóa trải nghiệm người dùng |
-| 🌍 Đa ngôn ngữ | Hỗ trợ Tiếng Anh, Tiếng Việt, Tiếng Trung, Tiếng Pháp, Tiếng Nhật, Tiếng Nga |
-| 🔄 Tương thích Dữ liệu | Tương thích hoàn toàn với cơ sở dữ liệu gốc của One API |
-| 📈 Bảng Điều khiển Dữ liệu | Console trực quan và biểu đồ phân tích thống kê chi tiết |
-| 🔒 Quản lý Quyền hạn | Phân nhóm Token, giới hạn mô hình, quản lý người dùng chi tiết |
+| 🎨 Giao diện Bento Hiện đại | Thiết kế Obsidian Dark kính mờ chuẩn Developer-First với dữ liệu thống kê trực quan |
+| 🌍 Đa ngôn ngữ | Hỗ trợ Tiếng Việt, Tiếng Anh, Tiếng Trung, Tiếng Pháp, Tiếng Nhật, Tiếng Nga |
+| 🔄 Tương thích Dữ liệu | Tương thích đồng thời với SQLite, MySQL và PostgreSQL |
+| 📈 Bảng Điều khiển Dữ liệu | Theo dõi SLA thời gian hoạt động, đo độ trễ mô hình và dự báo thời gian sử dụng số dư (Runway) |
+| 🔒 Quản lý Quyền hạn | Phân nhóm Token, giới hạn mô hình, quản lý người dùng và phiên đăng nhập |
 
-### 💰 Hạch toán Chi phí & Thanh toán
+### 💰 Cổng Thanh toán & Tính phí Thời gian thực
 
-- ✅ Nạp tiền nội bộ và phân bổ hạn mức cho các kịch bản hợp pháp (PayOS, NOWPayments, Stripe, EPay)
-- ✅ Hạch toán chi phí cấp tổ chức theo từng yêu cầu, lượng sử dụng và cache hit
-- ✅ Thống kê thanh toán Prompt Caching cho OpenAI, Azure, DeepSeek, Claude, Qwen và các mô hình hỗ trợ
-- ✅ Chính sách tính giá theo biểu thức phân tầng linh hoạt
+- ✅ **Chuyển khoản Ngân hàng VietQR**: Tự động sinh mã QR động, đẩy dữ liệu thời gian thực qua Server-Sent Events (SSE), phí 0% và cộng số dư ngay lập tức
+- ✅ **Cổng Crypto NOWPayments**: Hỗ trợ thanh toán tự động đa đồng tiền mã hóa (USDT, BTC, ETH, SOL) với tỷ giá chuyển đổi trực tiếp
+- ✅ **Công cụ Tính giá Phân tầng (Tiered Pricing)**: Hỗ trợ quy tắc thời gian (`hour >= 8 && hour < 20`, khung giờ qua đêm), điều kiện header và tham số body
+- ✅ **Hạch toán Prompt Caching**: Thống kê và chiết khấu cache chi tiết cho OpenAI, Claude, DeepSeek, Azure và Gemini
+- ✅ **Kiến trúc Zero-Polling**: Đẩy trạng thái giao dịch qua SSE và WebSocket với độ trễ sub-millisecond
 
-### 🔐 Xác thực & Bảo mật
+### 🔐 Xác thực & Bảo mật Cấp cao
 
-- 😈 Đăng nhập qua Discord
-- 🤖 Đăng nhập qua LinuxDO
-- 📱 Đăng nhập qua Telegram
-- 🌐 Đăng nhập qua Google OAuth
-- 🔑 Xác thực hợp nhất OIDC & Passkey / WebAuthn
+- 🛡️ **Xác thực 2 Lớp (2FA)**: Hỗ trợ mã xác thực TOTP (Google Authenticator, Microsoft Authenticator, 1Password)
+- 🌐 **Cloudflare Turnstile**: Chống bot AI và xác thực thông minh tự động
+- 📱 **Đa dạng OAuth**: GitHub, Discord, LinuxDO, Telegram, WeChat, OIDC và Custom OAuth với tính năng hủy liên kết linh hoạt
+- 📋 **Quản lý Phiên Đăng nhập**: Kiểm tra các thiết bị đang hoạt động và đăng xuất từ xa chỉ với một chạm
+- 🔑 **Công cụ Quản lý API Key**: Tích hợp tra cứu và quản lý token với [new-api-key-tool](https://github.com/Calcium-Ion/new-api-key-tool)
 
 ### 🚀 Tính năng Nâng cao
 

@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { AlertTriangle, KeyRound, Loader2, ShieldAlert } from 'lucide-react'
+import { AlertTriangle, KeyRound, Loader2 } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -204,12 +204,15 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
     )
   }
 
+  if (!supported && !enabled) {
+    return null
+  }
+
   const formattedLastUsed =
     lastUsed && !Number.isNaN(Date.parse(lastUsed))
       ? dayjs(lastUsed).fromNow()
       : t('Not used yet')
 
-  const showUnsupportedNotice = !supported && !enabled
   let backupStatus: {
     label: string
     variant: 'success' | 'warning' | 'neutral'
@@ -333,22 +336,6 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-              </div>
-            )}
-
-            {showUnsupportedNotice && (
-              <div className='bg-muted/60 text-muted-foreground flex items-start gap-3 rounded-md p-4 text-sm'>
-                <ShieldAlert className='mt-0.5 h-4 w-4 flex-shrink-0 text-amber-500' />
-                <div>
-                  <p className='text-foreground font-medium'>
-                    {t('Passkey not supported on this device')}
-                  </p>
-                  <p>
-                    {t(
-                      'Use a compatible browser or device with biometric authentication or a security key to register a Passkey.'
-                    )}
-                  </p>
-                </div>
               </div>
             )}
           </div>

@@ -32,18 +32,15 @@ import { cn } from '@/lib/utils'
 
 interface ApiInfoItemProps {
   item: ApiInfoItem
-  status: PingStatus
-  onTest: (url: string) => void
 }
 
 export function ApiInfoItemComponent(props: ApiInfoItemProps) {
   const { t } = useTranslation()
   const item = props.item
-  const status = props.status
 
   return (
-    <div className='group hover:bg-muted/40 flex items-center justify-between gap-2 px-3 py-2.5 transition-colors sm:gap-3 sm:px-5 sm:py-3'>
-      <div className='flex min-w-0 flex-1 items-center gap-2 sm:gap-3'>
+    <div className='group hover:bg-muted/30 flex items-center justify-between gap-3 px-4 py-3 transition-all duration-200 sm:px-5'>
+      <div className='flex min-w-0 flex-1 items-center gap-3'>
         <span
           className={cn(
             'inline-block size-2 shrink-0 rounded-full',
@@ -51,91 +48,43 @@ export function ApiInfoItemComponent(props: ApiInfoItemProps) {
           )}
         />
 
-        <div className='flex min-w-0 flex-1 flex-col gap-0.5'>
-          <div className='flex items-baseline gap-2'>
-            <span className='font-mono text-sm font-semibold'>
+        <div className='flex min-w-0 flex-1 flex-col gap-1'>
+          <div className='flex items-center gap-2'>
+            <span className='font-mono text-xs font-semibold text-foreground bg-muted/50 px-2 py-0.5 rounded-md border border-border/60'>
               {item.route}
             </span>
-            <span className='text-muted-foreground/60 hidden truncate text-xs md:inline'>
-              {item.description}
-            </span>
+            {item.description && (
+              <span className='text-muted-foreground hidden truncate text-xs md:inline'>
+                {item.description}
+              </span>
+            )}
           </div>
-          <span className='text-muted-foreground/40 truncate font-mono text-xs'>
+          <span className='text-muted-foreground/60 truncate font-mono text-[11px] select-all'>
             {item.url}
           </span>
         </div>
       </div>
 
-      <div className='flex shrink-0 items-center gap-2'>
-        <div className='flex items-center'>
-          {status.testing && (
-            <StatusBadge
-              label={t('Testing...')}
-              variant='warning'
-              className='animate-pulse'
-              copyable={false}
-            />
-          )}
-          {status.latency !== null && !status.testing && (
-            <StatusBadge
-              variant='success'
-              label={`${status.latency}${t('ms')}`}
-              className={cn(
-                'font-mono font-medium',
-                getLatencyColorClass(status.latency)
-              )}
-              copyable={false}
-            />
-          )}
-          {status.error && (
-            <StatusBadge label={t('N/A')} variant='neutral' copyable={false} />
-          )}
-        </div>
+      <div className='flex shrink-0 items-center gap-1.5'>
+        <CopyButton
+          value={item.url}
+          variant='outline'
+          size='sm'
+          className='h-8 gap-1.5 px-2.5 font-mono text-xs'
+          iconClassName='size-3.5'
+          tooltip={t('Copy URL')}
+          aria-label={t('Copy URL')}
+        />
 
-        <div className='flex items-center gap-0.5'>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => props.onTest(item.url)}
-            disabled={status.testing}
-            className='size-7 p-0'
-            title={t('Test Latency')}
-          >
-            <Zap
-              className={cn('size-3.5', status.testing && 'animate-pulse')}
-            />
-          </Button>
-
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => openExternalSpeedTest(item.url)}
-            className='hidden size-7 p-0 sm:inline-flex'
-            title={t('External Speed Test')}
-          >
-            <Gauge className='size-3.5' />
-          </Button>
-
-          <CopyButton
-            value={item.url}
-            variant='ghost'
-            size='sm'
-            className='size-7 p-0'
-            iconClassName='size-3.5'
-            tooltip={t('Copy URL')}
-            aria-label={t('Copy URL')}
-          />
-
-          <Button
-            variant='ghost'
-            size='sm'
-            className='hidden size-7 p-0 sm:inline-flex'
-            title={t('Open in New Tab')}
-            render={<a href={item.url} target='_blank' rel='noreferrer' />}
-          >
-            <ExternalLink className='size-3.5' />
-          </Button>
-        </div>
+        <Button
+          variant='ghost'
+          size='sm'
+          className='size-8 p-0 text-muted-foreground hover:text-foreground'
+          title={t('Open in New Tab')}
+          render={<a href={item.url} target='_blank' rel='noreferrer' />}
+        >
+          <ExternalLink className='size-3.5' />
+        </Button>
       </div>
     </div>
   )

@@ -24,12 +24,13 @@ import {
   Check,
   Copy,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
 import { GlitchText } from '@/components/cyber/glitch-text'
 import { ScrambleText } from '@/components/cyber/scramble-text'
+import { useStatus } from '@/hooks/use-status'
 
 interface FeaturesProps {
   className?: string
@@ -37,12 +38,25 @@ interface FeaturesProps {
 
 type SdkLang = 'cursor' | 'stream' | 'sdk'
 
-const SDK_SNIPPETS: Record<SdkLang, { code: string; label: string }> = {
-  cursor: {
-    label: 'Cursor / Cline',
-    code: `{
+export function Features(_props: FeaturesProps) {
+  const { t } = useTranslation()
+  const { status } = useStatus()
+  const [selectedLang, setSelectedLang] = useState<SdkLang>('cursor')
+  const [codeCopied, setCodeCopied] = useState(false)
+
+  const serverAddress =
+    (status?.server_address as string | undefined)?.trim() ||
+    (typeof window !== 'undefined' ? window.location.origin : 'https://api.openai.com')
+  const apiBaseUrl = `${serverAddress}/v1`
+  const apiHost = serverAddress.replace(/^https?:\/\//, '')
+
+  const snippets: Record<SdkLang, { code: string; label: string }> = useMemo(
+    () => ({
+      cursor: {
+        label: 'Cursor / Cline',
+        code: `{
   "api_type": "openai",
-  "base_url": "https://api.yourdomain.com/v1",
+  "base_url": "${apiBaseUrl}",
   "api_key": "sk-••••••••••••••••",
   "models": [
     "deepseek-r1",
@@ -51,11 +65,11 @@ const SDK_SNIPPETS: Record<SdkLang, { code: string; label: string }> = {
     "gpt-4o"
   ]
 }`,
-  },
-  stream: {
-    label: 'Protocol SSE Stream',
-    code: `POST /v1/chat/completions HTTP/1.1
-Host: api.yourdomain.com
+      },
+      stream: {
+        label: 'Protocol SSE Stream',
+        code: `POST /v1/chat/completions HTTP/1.1
+Host: ${apiHost}
 Authorization: Bearer sk-••••••••••••••••
 Content-Type: application/json
 
@@ -63,27 +77,24 @@ Content-Type: application/json
 < data: {"id":"cmpl-01","choices":[{"delta":{"content":"Connected."}}]}
 < data: {"id":"cmpl-01","choices":[{"delta":{"content":" Ready."}}]}
 < data: [DONE]`,
-  },
-  sdk: {
-    label: 'Unified AI SDK',
-    code: `import { createOpenAI } from '@ai-sdk/openai';
+      },
+      sdk: {
+        label: 'Unified AI SDK',
+        code: `import { createOpenAI } from '@ai-sdk/openai';
 
 export const gateway = createOpenAI({
-  baseURL: 'https://api.yourdomain.com/v1',
+  baseURL: '${apiBaseUrl}',
   apiKey: process.env.KEICHAN_API_KEY,
 });
 
 // Single client automatically routes to 50+ AI providers`,
-  },
-}
-
-export function Features(_props: FeaturesProps) {
-  const { t } = useTranslation()
-  const [selectedLang, setSelectedLang] = useState<SdkLang>('cursor')
-  const [codeCopied, setCodeCopied] = useState(false)
+      },
+    }),
+    [apiBaseUrl, apiHost]
+  )
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(SDK_SNIPPETS[selectedLang].code)
+    navigator.clipboard.writeText(snippets[selectedLang].code)
     setCodeCopied(true)
     setTimeout(() => setCodeCopied(false), 2000)
   }
@@ -312,32 +323,32 @@ export function Features(_props: FeaturesProps) {
 
           {/* Authentic Code Block with Language Tabs */}
           <div className='rounded-xl border border-border/80 bg-background/90 overflow-hidden font-mono text-xs shadow-inner'>
-            <div className='flex items-center justify-between border-b border-border/80 bg-muted/30 px-3 py-2'>
-              <div className='flex items-center gap-1.5'>
+            <div className='flex items-center justify-between gap-2 border-b border-border/80 bg-muted/30 px-3 py-2 flex-nowrap overflow-x-auto no-scrollbar'>
+              <div className='flex items-center gap-1 shrink-0 flex-nowrap'>
                 {(['cursor', 'stream', 'sdk'] as const).map((lang) => (
                   <button
                     type='button'
                     key={lang}
                     onClick={() => setSelectedLang(lang)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
+                    className={`whitespace-nowrap px-2.5 py-1 rounded-md text-[11px] font-medium transition-all shrink-0 ${
                       selectedLang === lang
                         ? 'bg-primary/20 text-primary font-semibold'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
                     }`}
                   >
-                    {SDK_SNIPPETS[lang].label}
+                    {snippets[lang].label}
                   </button>
                 ))}
               </div>
 
-              <div className='flex items-center gap-2'>
-                <span className='hidden sm:inline-block text-[10px] text-emerald-400 font-semibold'>
+              <div className='flex items-center gap-2 shrink-0 flex-nowrap whitespace-nowrap ml-auto'>
+                <span className='hidden sm:inline-block text-[10px] text-emerald-400 font-semibold shrink-0'>
                   ✓ {t('100% OPENAI COMPATIBLE')}
                 </span>
                 <button
                   type='button'
                   onClick={handleCopyCode}
-                  className='inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground border border-border/60 rounded px-2 py-0.5 bg-muted/40 hover:bg-muted transition-colors'
+                  className='inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground border border-border/60 rounded px-2 py-0.5 bg-muted/40 hover:bg-muted transition-colors shrink-0 whitespace-nowrap'
                   aria-label={t('Copy SDK snippet')}
                 >
                   {codeCopied ? (
@@ -358,15 +369,15 @@ export function Features(_props: FeaturesProps) {
             {/* Code Body */}
             <div className='p-3.5 text-[11px] leading-relaxed overflow-x-auto text-foreground/90 bg-black/40'>
               <pre className='whitespace-pre font-mono'>
-                <code>{SDK_SNIPPETS[selectedLang].code}</code>
+                <code>{snippets[selectedLang].code}</code>
               </pre>
             </div>
 
             {/* Ecosystem Compatibility Row */}
             <div className='border-t border-border/60 bg-muted/20 px-3.5 py-2 flex flex-wrap items-center gap-1.5 text-[10.5px] text-muted-foreground'>
-              <span className='text-foreground/70 font-semibold font-mono'>{t('WORKS WITH:')}</span>
+              <span className='text-foreground/70 font-semibold font-mono whitespace-nowrap'>{t('WORKS WITH:')}</span>
               {['Cursor', 'Cline', 'Roo Code', 'Open WebUI', 'Dify', 'NextChat', 'Cherry Studio', 'LangChain'].map((tool) => (
-                <span key={tool} className='text-foreground/80 font-mono text-[10px]'>
+                <span key={tool} className='text-foreground/80 font-mono text-[10px] whitespace-nowrap'>
                   {tool}
                 </span>
               ))}

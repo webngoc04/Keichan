@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   BookOpen,
   Check,
@@ -28,10 +28,23 @@ import { GlitchText } from '@/components/cyber/glitch-text'
 import { ScrambleText } from '@/components/cyber/scramble-text'
 import { PublicLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
+import { useStatus } from '@/hooks/use-status'
 import { cn } from '@/lib/utils'
 
-const CODE_EXAMPLES = {
-  curl: `curl https://api.yourdomain.com/v1/chat/completions \\
+export function Docs() {
+  const { t } = useTranslation()
+  const { status } = useStatus()
+  const [activeLang, setActiveLang] = useState<'curl' | 'python' | 'javascript'>('python')
+  const [copied, setCopied] = useState(false)
+
+  const serverAddress =
+    (status?.server_address as string | undefined)?.trim() ||
+    (typeof window !== 'undefined' ? window.location.origin : 'https://api.openai.com')
+  const apiBaseUrl = `${serverAddress}/v1`
+
+  const codeExamples = useMemo(
+    () => ({
+      curl: `curl ${apiBaseUrl}/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -d '{
@@ -42,10 +55,10 @@ const CODE_EXAMPLES = {
     ],
     "stream": true
   }'`,
-  python: `from openai import OpenAI
+      python: `from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.yourdomain.com/v1",
+    base_url="${apiBaseUrl}",
     api_key="YOUR_API_KEY",
 )
 
@@ -61,10 +74,10 @@ response = client.chat.completions.create(
 for chunk in response:
     if chunk.choices[0].delta.content:
         print(chunk.choices[0].delta.content, end="")`,
-  javascript: `import OpenAI from 'openai';
+      javascript: `import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.yourdomain.com/v1',
+  baseURL: '${apiBaseUrl}',
   apiKey: 'YOUR_API_KEY',
 });
 
@@ -81,15 +94,12 @@ async function main() {
 }
 
 main();`,
-}
-
-export function Docs() {
-  const { t } = useTranslation()
-  const [activeLang, setActiveLang] = useState<'curl' | 'python' | 'javascript'>('python')
-  const [copied, setCopied] = useState(false)
+    }),
+    [apiBaseUrl]
+  )
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(CODE_EXAMPLES[activeLang])
+    navigator.clipboard.writeText(codeExamples[activeLang])
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -154,7 +164,7 @@ export function Docs() {
           </div>
 
           <pre className='overflow-x-auto p-5 font-mono text-xs sm:text-[13px] leading-relaxed text-foreground/90 bg-black/40'>
-            <code>{CODE_EXAMPLES[activeLang]}</code>
+            <code>{codeExamples[activeLang]}</code>
           </pre>
         </div>
 

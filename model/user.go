@@ -871,13 +871,20 @@ func (user *User) ClearBinding(bindingType string) error {
 	}
 
 	bindingColumnMap := map[string]string{
-		"email":    "email",
-		"github":   "github_id",
-		"discord":  "discord_id",
-		"oidc":     "oidc_id",
-		"wechat":   "wechat_id",
-		"telegram": "telegram_id",
-		"linuxdo":  "linux_do_id",
+		"email":       "email",
+		"github":      "github_id",
+		"github_id":   "github_id",
+		"discord":     "discord_id",
+		"discord_id":  "discord_id",
+		"oidc":        "oidc_id",
+		"oidc_id":     "oidc_id",
+		"wechat":      "wechat_id",
+		"wechat_id":   "wechat_id",
+		"telegram":    "telegram_id",
+		"telegram_id": "telegram_id",
+		"linuxdo":     "linux_do_id",
+		"linux_do_id": "linux_do_id",
+		"linux_do":    "linux_do_id",
 	}
 
 	column, ok := bindingColumnMap[bindingType]
@@ -889,7 +896,7 @@ func (user *User) ClearBinding(bindingType string) error {
 		if err := tx.Model(&User{}).Where("id = ?", user.Id).Update(column, "").Error; err != nil {
 			return err
 		}
-		if bindingType == ExternalIdentityProviderTelegram {
+		if bindingType == ExternalIdentityProviderTelegram || bindingType == "telegram_id" {
 			return ReleaseExternalIdentityWithTx(tx, ExternalIdentityProviderTelegram, user.Id)
 		}
 		return nil

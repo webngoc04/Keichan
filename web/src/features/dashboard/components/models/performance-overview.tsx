@@ -103,27 +103,27 @@ export function PerformanceOverview() {
 
   if (!loading && !hasData) {
     return (
-      <div className='text-muted-foreground overflow-hidden rounded-lg border px-4 py-3 text-center text-xs'>
+      <div className='glass-card text-muted-foreground overflow-hidden rounded-2xl border border-border/80 px-4 py-3 text-center font-mono text-xs backdrop-blur-xl'>
         {t('No performance data available')}
       </div>
     )
   }
 
   return (
-    <div className='overflow-hidden rounded-lg border'>
+    <div className='glass-card overflow-hidden rounded-2xl border border-border/80 shadow-xs backdrop-blur-xl'>
       <div className='flex flex-wrap items-center gap-x-5 gap-y-2.5 px-4 py-2.5 sm:px-5 sm:py-3'>
         {/* Title */}
-        <div className='flex items-center gap-1.5'>
+        <div className='flex items-center gap-2'>
           <IconBadge tone='success' size='xs'>
             <HeartPulse />
           </IconBadge>
-          <span className='text-xs font-semibold whitespace-nowrap'>
+          <span className='text-xs font-semibold whitespace-nowrap tracking-tight text-foreground'>
             {t('Performance health')}
           </span>
         </div>
 
         {/* Separator */}
-        <div className='bg-border hidden h-4 w-px sm:block' />
+        <div className='bg-border/70 hidden h-4 w-px sm:block' />
 
         {/* 3 KPI inline metrics */}
         {loading ? (
@@ -160,7 +160,7 @@ export function PerformanceOverview() {
         )}
 
         {/* Separator */}
-        <div className='bg-border hidden h-4 w-px lg:block' />
+        <div className='bg-border/70 hidden h-4 w-px lg:block' />
 
         {/* Top models inline badges */}
         {!loading && hasData && (

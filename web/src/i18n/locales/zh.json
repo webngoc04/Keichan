@@ -5578,6 +5578,7 @@
     "about.cta.subtitle": "快速部署 New API，几分钟内统一接入所有服务商。",
     "about.cta.title": "全面掌控您的 AI 基础设施",
     "about.footer.basedOn": "基于",
+    "about.footer.forkOf": "分支自",
     "about.footer.product": "Keichan",
     "about.footer.repoLabel": "Keichan 项目仓库：",
     "about.footer.repoUrl": "https://github.com/webngoc04/Keichan",

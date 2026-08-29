@@ -189,26 +189,27 @@ docker run --name new-api -d --restart always \
 
 | Feature | Description |
 |------|------|
-| 🎨 New UI | Modern user interface design |
-| 🌍 Multi-language | Supports Simplified Chinese, Traditional Chinese, English, French, Japanese |
-| 🔄 Data Compatibility | Fully compatible with the original One API database |
-| 📈 Data Dashboard | Visual console and statistical analysis |
-| 🔒 Permission Management | Token grouping, model restrictions, user management |
+| 🎨 Modern Bento UI | Obsidian dark frosted glass aesthetic with clean developer-first telemetry |
+| 🌍 Multi-language | Supports English, Tiếng Việt, 简体中文, 繁體中文, Français, 日本語, Русский |
+| 🔄 Data Compatibility | Fully compatible with SQLite, MySQL, and PostgreSQL databases |
+| 📈 Live Analytics | Visual SLA uptime tracking, model latency benchmarks, and quota runway forecasting |
+| 🔒 Permission Management | Token grouping, fine-grained model restrictions, and multi-tier role management |
 
-### 💰 Authorized Usage Accounting and Billing
+### 💰 Payment & Real-Time Billing
 
-- ✅ Internal top-up and quota allocation for lawful authorized scenarios (EPay, Stripe)
-- ✅ Organization-level per-request, usage-based, and cache-hit cost accounting
-- ✅ Cache billing statistics for OpenAI, Azure, DeepSeek, Claude, Qwen, and supported models
-- ✅ Flexible billing policies for internal management or authorized enterprise customers
+- ✅ **VietQR Direct Bank Payment**: Automated dynamic QR generation, real-time Server-Sent Events (SSE) push, 0% fees, and instant balance top-up
+- ✅ **NOWPayments Crypto Gateway**: Automated multi-cryptocurrency settlements (USDT, BTC, ETH, SOL) with live rate conversions
+- ✅ **Tiered Dynamic Pricing**: Expression-based billing engine supporting time ranges (`hour >= 8 && hour < 20`, overnight ranges), header & body parameter rules
+- ✅ **Cache & Token Accounting**: Organization-level cost tracking and prompt cache discounts for OpenAI, Claude, DeepSeek, Azure, and Gemini
+- ✅ **Zero-Polling Architecture**: Sub-millisecond real-time push updates via SSE and WebSockets
 
-### 🔐 Authorization and Security
+### 🔐 Authorization & High-End Security
 
-- 😈 Discord authorization login
-- 🤖 LinuxDO authorization login
-- 📱 Telegram authorization login
-- 🔑 OIDC unified authentication
-- 🔍 Key quota query usage (with [new-api-key-tool](https://github.com/Calcium-Ion/new-api-key-tool))
+- 🛡️ **Two-Factor Authentication (2FA)**: TOTP authenticator app support (Google Authenticator, Microsoft Authenticator, 1Password)
+- 🌐 **Cloudflare Turnstile**: Automated AI bot prevention and smart challenge protection
+- 📱 **Multi-Provider OAuth**: GitHub, Discord, LinuxDO, Telegram, WeChat, OIDC, and Custom OAuth providers with admin unbinding management
+- 📋 **Active Session Tracking**: Real-time user session inspection with remote one-click device revocation
+- 🔑 **API Key Tooling**: Integrated token management with [new-api-key-tool](https://github.com/Calcium-Ion/new-api-key-tool)
 
 ### 🚀 Advanced Features
 

@@ -47,6 +47,9 @@ export function Turnstile({
       try {
         window.turnstile.render(ref.current, {
           sitekey: siteKey,
+          theme: 'auto',
+          appearance: 'always',
+          'refresh-expired': 'auto',
           callback: (token: string) => onVerify(token),
           'error-callback': () => onExpire?.(),
           'expired-callback': () => onExpire?.(),

@@ -302,6 +302,14 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 		if user.Id == 0 {
 			return nil, &OAuthUserDeletedError{}
 		}
+		if oauthUser.AvatarURL != "" {
+			setting := user.GetSetting()
+			if setting.AvatarUrl == "" {
+				setting.AvatarUrl = oauthUser.AvatarURL
+				user.SetSetting(setting)
+				_ = user.Update(false)
+			}
+		}
 		return user, nil
 	}
 
@@ -384,6 +392,11 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 	}
 	user.Role = common.RoleCommonUser
 	user.Status = common.UserStatusEnabled
+	if oauthUser.AvatarURL != "" {
+		setting := user.GetSetting()
+		setting.AvatarUrl = oauthUser.AvatarURL
+		user.SetSetting(setting)
+	}
 
 	// Handle affiliate code
 	inviterId := 0

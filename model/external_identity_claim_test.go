@@ -89,3 +89,41 @@ func TestInitializeExternalIdentityClaimsRejectsAmbiguousLegacyBindings(t *testi
 	require.NoError(t, DB.Model(&ExternalIdentityClaim{}).Count(&count).Error)
 	assert.Zero(t, count)
 }
+
+func TestClearBindingSupportsAllProvidersAndAliases(t *testing.T) {
+	truncateTables(t)
+
+	user := User{
+		Username:   "all-providers-unbind",
+		Password:   "password",
+		Email:      "test@example.com",
+		GitHubId:   "gh-123",
+		DiscordId:  "dc-123",
+		WeChatId:   "wc-123",
+		OidcId:     "oidc-123",
+		TelegramId: "tg-123",
+		LinuxDOId:  "ld-123",
+	}
+	require.NoError(t, DB.Create(&user).Error)
+
+	require.NoError(t, user.ClearBinding("email"))
+	assert.Empty(t, user.Email)
+
+	require.NoError(t, user.ClearBinding("github_id"))
+	assert.Empty(t, user.GitHubId)
+
+	require.NoError(t, user.ClearBinding("discord"))
+	assert.Empty(t, user.DiscordId)
+
+	require.NoError(t, user.ClearBinding("wechat_id"))
+	assert.Empty(t, user.WeChatId)
+
+	require.NoError(t, user.ClearBinding("oidc"))
+	assert.Empty(t, user.OidcId)
+
+	require.NoError(t, user.ClearBinding("telegram_id"))
+	assert.Empty(t, user.TelegramId)
+
+	require.NoError(t, user.ClearBinding("linuxdo"))
+	assert.Empty(t, user.LinuxDOId)
+}

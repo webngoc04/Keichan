@@ -149,12 +149,12 @@ function LineSparkline(props: { values?: number[]; tone: StatCardTone }) {
   const gradientId = `stat-card-line-${rawGradientId.replaceAll(':', '')}`
   const paths = buildLineSparkline(props.values)
 
-  if (!paths) return <div className='h-8' aria-hidden='true' />
+  if (!paths) return <div className='h-9' aria-hidden='true' />
 
   return (
     <div
       className={cn(
-        'relative h-8 overflow-hidden rounded-lg',
+        'relative h-9 overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-[1.02]',
         LINE_TONE_CLASSES[props.tone]
       )}
       aria-hidden='true'
@@ -162,11 +162,12 @@ function LineSparkline(props: { values?: number[]; tone: StatCardTone }) {
       <svg
         viewBox='0 0 160 36'
         preserveAspectRatio='none'
-        className='size-full'
+        className='size-full overflow-visible'
       >
         <defs>
           <linearGradient id={gradientId} x1='0' x2='0' y1='0' y2='1'>
-            <stop offset='0%' stopColor='currentColor' stopOpacity='0.24' />
+            <stop offset='0%' stopColor='currentColor' stopOpacity='0.35' />
+            <stop offset='60%' stopColor='currentColor' stopOpacity='0.08' />
             <stop offset='100%' stopColor='currentColor' stopOpacity='0' />
           </linearGradient>
         </defs>
@@ -177,8 +178,9 @@ function LineSparkline(props: { values?: number[]; tone: StatCardTone }) {
           stroke='currentColor'
           strokeLinecap='round'
           strokeLinejoin='round'
-          strokeWidth='2.25'
+          strokeWidth='2'
           vectorEffect='non-scaling-stroke'
+          className='drop-shadow-[0_0_6px_currentColor]'
         />
       </svg>
     </div>
@@ -189,13 +191,13 @@ function BarSparkline(props: { values?: number[]; tone: StatCardTone }) {
   const sparkline = normalizeSparkline(props.values)
 
   return (
-    <div className='flex h-8 items-end gap-1' aria-hidden='true'>
+    <div className='flex h-9 items-end gap-1 px-0.5' aria-hidden='true'>
       {sparkline.map((bucket) => (
         <span
           key={bucket.position}
           className={cn(
-            'flex-1 rounded-t-sm bg-linear-to-t',
-            bucket.height <= 0 && 'opacity-20',
+            'flex-1 rounded-t-sm bg-linear-to-t transition-all duration-300 group-hover:opacity-100',
+            bucket.height <= 0 && 'opacity-15',
             TONE_CLASSES[props.tone]
           )}
           style={{ height: `${bucket.height}%` }}

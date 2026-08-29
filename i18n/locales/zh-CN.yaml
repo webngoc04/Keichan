@@ -189,6 +189,7 @@ checkin.failed: "签到失败，请稍后重试"
 checkin.quota_failed: "签到失败：更新额度出错"
 
 # Passkey messages
+passkey.disabled: "管理员未启用 Passkey 登录"
 passkey.create_failed: "无法创建 Passkey 凭证"
 passkey.login_abnormal: "Passkey 登录状态异常"
 passkey.update_failed: "Passkey 凭证更新失败"
