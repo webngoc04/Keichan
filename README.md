@@ -56,11 +56,40 @@
 
 ## 📝 Project Description
 
+> [!NOTE]
+> **Keichan (New API Fork)** is an enterprise-ready, customized fork of [QuantumNous/new-api](https://github.com/QuantumNous/new-api) (originally based on [One API](https://github.com/songquanpeng/one-api)), optimized for real-time banking and crypto payments, high-performance developer experience, advanced identity security, and production-grade reliability.
+
 > [!IMPORTANT]
 > - This project is intended solely for lawful and authorized AI API gateway, organization-level authentication, multi-model management, usage analytics, cost accounting, and private deployment scenarios.
 > - Users must lawfully obtain upstream API keys, accounts, model services, and interface permissions, and must comply with upstream terms of service and applicable laws and regulations.
 > - Users should ensure their use complies with upstream terms of service and applicable laws and regulations.
 > - When providing generative AI services to the public, users should comply with applicable regulatory requirements and fulfill all filing, licensing, content safety, real-name verification, log retention, tax, and upstream authorization obligations required by their jurisdiction.
+
+---
+
+## 🚀 Fork Highlights & Added Features
+
+This fork extends the upstream New API gateway with the following major features and improvements:
+
+### 1. 💳 Real-Time Payment & Zero-Polling Architecture
+- **VietQR Bank Transfer Integration**: Dynamic QR code generation, sub-second transaction reconciliation via Server-Sent Events (SSE push), 0% payment gateway fees, and automated 120s order expiration handling.
+- **NOWPayments Crypto Gateway**: Fully automated crypto settlements (USDT, BTC, ETH, SOL) with real-time currency conversion.
+- **Zero-Polling Client Architecture**: Eliminated continuous HTTP interval polling for orders and tasks in favor of passive, event-driven SSE and WebSocket streams.
+
+### 2. 🛡️ Advanced Security & Authentication
+- **Two-Factor Authentication (2FA)**: Full TOTP Authenticator app support (Google Authenticator, Microsoft Authenticator, 1Password).
+- **Cloudflare Turnstile**: Automated AI bot prevention and smart challenge protection on auth endpoints.
+- **OAuth Provider Unbinding**: Restored and fixed admin capability to unbind built-in OAuth providers (GitHub, Discord, WeChat, Telegram, OIDC, LinuxDO) as well as custom OAuth providers.
+- **Active Session Audit & Remote Revocation**: Real-time user session tracking with one-click remote device logout.
+
+### 3. 🎨 Modern Developer-First Obsidian Bento Dashboard
+- **Glassmorphic Bento UI**: Deep dark obsidian canvas, hairline borders, and frosted glass containers (`.glass-card`).
+- **Interactive cURL Generator**: Multi-color syntax-highlighted request generator with ready-to-run curl snippets.
+- **Runway & Quota Forecasting**: Visual gauge estimating credit runway based on 24h usage patterns without noisy telemetry pings.
+
+### 4. ⚡ Tiered Pricing & Expression Engine Optimizations
+- **Time Rule Bug Fix**: Corrected time range expression logic (`hour >= 8 && hour < 20` for daytime ranges, `hour >= 21 || hour < 6` for overnight ranges) to prevent tautology expressions from applying multipliers all day long.
+- **Dynamic Multipliers**: Support for request body parameters, custom headers, and token normalizers.
 
 ---
 

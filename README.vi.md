@@ -59,12 +59,40 @@
 ## 📝 Giới thiệu Dự án
 
 > [!NOTE]  
-> Đây là dự án mã nguồn mở được phát triển dựa trên [One API](https://github.com/songquanpeng/one-api).
+> **Keichan (New API Fork)** là bản fork tùy biến nâng cao dựa trên [QuantumNous/new-api](https://github.com/QuantumNous/new-api) (nguồn gốc từ [One API](https://github.com/songquanpeng/one-api)), được tối ưu hóa đặc biệt cho trải nghiệm lập trình viên, thanh toán ngân hàng & crypto thời gian thực, bảo mật cấp doanh nghiệp và hiệu năng ổn định.
 
 > [!IMPORTANT]  
 > - Dự án này chỉ nhằm mục đích hợp pháp và được cấp phép để làm cổng API AI, xác thực cấp tổ chức, quản lý đa mô hình, phân tích lượng dùng, hạch toán chi phí và triển khai cục bộ/riêng tư.
 > - Người dùng phải tự lấy khóa API, tài khoản, dịch vụ mô hình và quyền truy cập từ nhà cung cấp một cách hợp pháp, đồng thời tuân thủ điều khoản dịch vụ của bên cung cấp cùng luật pháp và quy định hiện hành.
 > - Khi cung cấp dịch vụ AI tạo sinh ra công chúng, người dùng cần tuân thủ đầy đủ các yêu cầu quản lý, giấy phép, an toàn nội dung, định danh, lưu trữ nhật ký, thuế và nghĩa vụ ủy quyền liên quan.
+
+---
+
+## 🚀 Điểm Nổi Bật & Tính Năng Đã Được Bổ Sung (Fork Highlights)
+
+Bản fork này bổ sung các tính năng và cải tiến chuyên sâu so với phiên bản new-api gốc:
+
+### 1. 💳 Cổng Thanh toán Thời gian thực & Kiến trúc Zero-Polling
+- **Tích hợp Chuyển khoản Ngân hàng VietQR**: Tự động sinh mã QR động theo từng đơn hàng, tự động nhận diện và cộng số dư theo thời gian thực qua Server-Sent Events (SSE push), phí giao dịch 0% và tự động hủy đơn sau 120s nếu hết hạn.
+- **Cổng Thanh toán Tiền điện tử NOWPayments**: Tự động hóa thanh toán đa đồng tiền mã hóa (USDT, BTC, ETH, SOL...) với tỷ giá chuyển đổi USD/VND trực tiếp.
+- **Kiến trúc Zero-Polling**: Loại bỏ hoàn toàn cơ chế gọi API lặp định kỳ (HTTP polling); toàn bộ trạng thái đơn hàng và tác vụ được đẩy trực tiếp từ server đến client qua luồng SSE/WebSocket với độ trễ dưới 1 mili-giây.
+
+### 2. 🛡️ Bảo mật Nâng cao & Quản lý Định danh
+- **Xác thực 2 Lớp (2FA)**: Hỗ trợ đầy đủ mã xác thực thời gian thực TOTP qua các ứng dụng Google Authenticator, Microsoft Authenticator, 1Password...
+- **Bảo vệ Bot bằng Cloudflare Turnstile**: Tích hợp xác thực thông minh tự động chống spam và tấn công brute-force vào các endpoint nhạy cảm.
+- **Hủy Liên kết Tài khoản (OAuth Unbinding)**: Sửa lỗi và kích hoạt tính năng cho phép Admin hủy liên kết các nhà cung cấp OAuth tích hợp sẵn (GitHub, Discord, WeChat, Telegram, OIDC, LinuxDO) lẫn Custom OAuth.
+- **Quản lý Phiên Đăng nhập Chủ động**: Tra cứu thông tin IP, thiết bị đăng nhập của từng tài khoản và hỗ trợ đăng xuất từ xa chỉ với 1 click.
+
+### 3. 🎨 Giao diện Dashboard Bento Dark Hiện đại
+- **Giao diện Kính mờ Obsidian**: Thiết kế nền tối sâu sang trọng, viền siêu mỏng và thẻ kính mờ (`.glass-card`), tối ưu hóa hiển thị cho lập trình viên.
+- **Bộ Tạo Mã cURL Tương tác**: Trình tạo lệnh request trực quan với tô màu cú pháp (Syntax Highlighting) và nút sao chép nhanh một chạm.
+- **Dự báo Thời gian Sử dụng Số dư (Runway)**: Thanh đo và tính toán thời gian sử dụng ước tính dựa trên mức tiêu thụ 24h mà không gửi request ping ngầm gây tải server.
+
+### 4. ⚡ Tối ưu hóa Bộ Tính Giá Phân Tầng (Tiered Pricing Engine)
+- **Sửa Lỗi Biểu Thức Khung Giờ (Time Rule Bug Fix)**: Sửa dứt điểm lỗi logic hằng đúng (tautology) trong quy tắc thời gian — áp dụng `&&` (`hour >= 8 && hour < 20`) cho khung giờ trong ngày và `||` (`hour >= 21 || hour < 6`) cho khung giờ qua đêm, giúp hệ số nhân cước phí không còn bị kích hoạt cả ngày.
+- **Hệ số Nhân Linh hoạt**: Hỗ trợ quy tắc cước phí dựa trên header tùy chỉnh, tham số body request và bộ chuẩn hóa token.
+
+---
 
 ---
 
