@@ -126,7 +126,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
               </div>
               <div className='p-4 space-y-2 text-muted-foreground text-[11.5px] leading-relaxed font-mono'>
                 <div className='text-foreground/90'>
-                  <span className='text-primary'>POST</span> {typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://keichan.indevs.in'}/v1/chat/completions
+                  <span className='text-primary'>POST</span> {typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null' ? window.location.origin : ''}/v1/chat/completions
                 </div>
                 <div className='pt-2 border-t border-border/40 text-emerald-400 flex items-center gap-2 font-sans'>
                   <Check className='size-3.5' />

@@ -46,7 +46,7 @@ export function Hero(props: HeroProps) {
     (status?.server_address as string | undefined)?.trim() ||
     (typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null'
       ? window.location.origin
-      : 'https://keichan.indevs.in')
+      : '')
 
   const quickCommand = `${currentOrigin}/v1/chat/completions`
 
